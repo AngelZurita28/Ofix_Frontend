@@ -1,31 +1,214 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from '../store';
-import { 
-  ArrowRight, ShieldCheck, HeartHandshake, Zap, MapPin, 
-  Mail, Lock, Phone, User, X 
+import {
+  ArrowRight,
+  BadgeCheck,
+  CircleDollarSign,
+  ClipboardList,
+  Clock,
+  EyeOff,
+  HeartHandshake,
+  Lock,
+  Mail,
+  MapPin,
+  MapPinned,
+  MessageCircle,
+  Navigation,
+  Phone,
+  Search,
+  Send,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  Store,
+  User,
+  Wrench,
+  X
 } from 'lucide-vue-next';
 
-const { state, toggleMode, login, register } = useStore();
+type LandingMode = 'DEMANDA' | 'OFERTA';
 
-// Modal State
+const { state, setMode, login, register } = useStore();
+
 const isAuthModalOpen = ref(false);
 const isRegister = ref(false);
 
-// Form States
 const email = ref('');
 const password = ref('');
 const name = ref('');
 const phone = ref('');
-const selectedRole = ref<'DEMANDA' | 'OFERTA'>(state.activeMode);
+const selectedRole = ref<LandingMode>(state.activeMode);
 
-// Form errors
 const errors = ref({
   name: '',
   email: '',
   phone: '',
   password: ''
 });
+
+const modeCopy = {
+  DEMANDA: {
+    badge: 'Modo Necesito',
+    eyebrow: 'Publica una necesidad, recibe postulaciones locales',
+    title: 'Cuando algo urge en casa, Ofix convierte tu necesidad en un trabajo claro.',
+    highlight: 'Tablon de tareas',
+    question: '¿Que necesitas resolver hoy?',
+    promise:
+      'El usuario no empieza buscando perfiles. Empieza contando un problema concreto y Ofix lo convierte en una solicitud estructurada para que otros puedan postularse.',
+    surfaceTitle: 'La pantalla se comporta como un tablon vivo',
+    surfaceText:
+      'Ordena tareas por urgencia, presupuesto, categoria y cercania aproximada. La informacion importante es la necesidad, no el vendedor.',
+    primaryObject: 'Tarea publicada',
+    examples: ['Fuga en cocina', 'Instalar minisplit', 'Maquillaje para evento', 'Reparar porton'],
+    modules: [
+      {
+        label: 'Entrada',
+        title: 'Formulario narrativo',
+        text: 'Captura problema, fotos, presupuesto estimado, horario y urgencia sin pedir la direccion exacta desde el inicio.'
+      },
+      {
+        label: 'Vista',
+        title: 'Postulaciones comparables',
+        text: 'Cada proveedor responde con llegada estimada, precio, propuesta tecnica y señales de reputacion.'
+      },
+      {
+        label: 'Decision',
+        title: 'Aceptar antes de revelar',
+        text: 'La direccion fina se desbloquea despues del acuerdo, con el pago en garantia listo para activar la visita.'
+      }
+    ],
+    description:
+      'Crea una tarea con presupuesto, urgencia y zona aproximada. Los proveedores cercanos se postulan y solo revelas tu direccion exacta cuando ya existe un trato aceptado.',
+    cta: 'Publicar mi necesidad',
+    secondary: 'Ver como se protege mi ubicacion',
+    previewTitle: 'Fuga debajo de tarja',
+    previewLabel: 'Tarea publicada',
+    previewMeta: 'Zona Centro, Monclova',
+    previewPrice: '$650 MXN',
+    previewStatus: '3 postulantes',
+    locationPublic: 'Zona Centro, Monclova',
+    locationPrivate: 'Direccion exacta bloqueada',
+    boardTitle: 'Postulaciones entrantes',
+    boardItems: [
+      'Mateo G. puede llegar en 25 min',
+      'Valeria S. confirma refacciones',
+      'Alejandro R. sugiere visita manana'
+    ],
+    metrics: [
+      { value: '1.5 km', label: 'radio visible' },
+      { value: '3 pasos', label: 'para publicar' },
+      { value: 'Escrow', label: 'pago resguardado' }
+    ],
+    flow: [
+      {
+        icon: ClipboardList,
+        title: 'Describe la tarea',
+        text: 'Problema, fotos, presupuesto estimado y nivel de urgencia.'
+      },
+      {
+        icon: Search,
+        title: 'Compara postulantes',
+        text: 'Recibe propuestas de talento cercano con reputacion y tiempos.'
+      },
+      {
+        icon: EyeOff,
+        title: 'Privacidad por fases',
+        text: 'Primero se muestra la zona. La direccion exacta se libera al aceptar.'
+      }
+    ],
+    rail: [
+      'Publicacion con presupuesto',
+      'Postulacion de proveedores',
+      'Aceptacion y deposito Escrow',
+      'Direccion exacta desbloqueada'
+    ]
+  },
+  OFERTA: {
+    badge: 'Modo Ofrezco',
+    eyebrow: 'Explora talento, perfiles y negocios mexicanos',
+    title: 'Cuando buscas calidad, Ofix te deja explorar quien sabe resolverlo.',
+    highlight: 'Directorio de perfiles',
+    question: '¿Quien puede hacerlo mejor?',
+    promise:
+      'El usuario no publica primero. Explora talento local, compara perfiles y contacta directamente a quien ya demuestra experiencia.',
+    surfaceTitle: 'La pantalla se comporta como un catalogo de talento',
+    surfaceText:
+      'Prioriza categorias, portafolios, reseñas, disponibilidad y precios. La informacion importante es la capacidad comprobable del proveedor.',
+    primaryObject: 'Perfil de proveedor',
+    examples: ['Plomeria', 'Construccion', 'Maquillaje', 'Clases particulares'],
+    modules: [
+      {
+        label: 'Entrada',
+        title: 'Busqueda por categoria',
+        text: 'Permite explorar oficios, servicios fisicos o virtuales, negocios pequeños y talento independiente por zona.'
+      },
+      {
+        label: 'Vista',
+        title: 'Perfiles con evidencia',
+        text: 'Muestra galeria, reseñas, trabajos completados, precio base, tiempo de respuesta e insignias de confianza.'
+      },
+      {
+        label: 'Decision',
+        title: 'Oferta directa contextual',
+        text: 'El cliente inicia contacto explicando necesidad, fecha y presupuesto para convertir el perfil en una contratacion.'
+      }
+    ],
+    description:
+      'Navega por categorias, revisa portafolios, reputacion y disponibilidad. Contacta directo a un proveedor o pequeno negocio con una solicitud precisa de trabajo.',
+    cta: 'Explorar talento local',
+    secondary: 'Ver categorias disponibles',
+    previewTitle: 'Mateo Gonzalez',
+    previewLabel: 'Perfil verificado',
+    previewMeta: 'Fontaneria - responde en 10 min',
+    previewPrice: '$220 / hora',
+    previewStatus: '4.9 estrellas',
+    locationPublic: 'Disponible en tu zona',
+    locationPrivate: 'Agenda y detalles por confirmar',
+    boardTitle: 'Perfil destacado',
+    boardItems: [
+      '84 trabajos completados',
+      'Portafolio con reparaciones reales',
+      'Insignias: Puntual, Identidad verificada'
+    ],
+    metrics: [
+      { value: '12+', label: 'categorias' },
+      { value: '10 min', label: 'respuesta media' },
+      { value: '4.9', label: 'reputacion visible' }
+    ],
+    flow: [
+      {
+        icon: Store,
+        title: 'Explora por categoria',
+        text: 'Construccion, plomeria, maquillaje, clases, reparaciones y mas.'
+      },
+      {
+        icon: Star,
+        title: 'Evalua perfiles',
+        text: 'Fotos, reseñas, experiencia, precio y disponibilidad antes de contactar.'
+      },
+      {
+        icon: Send,
+        title: 'Lanza oferta directa',
+        text: 'Explica que necesitas, fecha, presupuesto y condiciones de visita.'
+      }
+    ],
+    rail: [
+      'Busqueda por categoria',
+      'Perfil, portafolio y reseñas',
+      'Solicitud directa al proveedor',
+      'Escrow antes de revelar detalles finales'
+    ]
+  }
+} as const;
+
+const currentMode = computed(() => modeCopy[state.activeMode]);
+const isDemandMode = computed(() => state.activeMode === 'DEMANDA');
+
+const switchMode = (mode: LandingMode) => {
+  setMode(mode);
+  selectedRole.value = mode;
+};
 
 const openAuthModal = (registerMode = false) => {
   isRegister.value = registerMode;
@@ -89,190 +272,354 @@ const handleSubmit = () => {
   }
 };
 
-const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
+const selectRole = (role: LandingMode) => {
   selectedRole.value = role;
 };
 </script>
 
 <template>
-  <div class="welcome-container">
-    <!-- Portada Header (Floating brand identity and inline login button) -->
-    <div class="portada-header">
-      <div class="brand-logo">
+  <div class="welcome-container" :class="{ 'is-demand': isDemandMode, 'is-offer': !isDemandMode }">
+    <div class="landing-grain" aria-hidden="true"></div>
+
+    <header class="portada-header">
+      <button class="brand-logo" type="button" aria-label="Ofix">
         <img src="/src/assets/ofix.svg" alt="Ofix" class="brand-logo-img" />
-      </div>
-      <button @click="openAuthModal(false)" class="secondary-btn text-xs py-2 px-4">
-        Iniciar Sesión
       </button>
-    </div>
-
-    <!-- General Message / Hero Portada Section (Now acts as a full cover, not a card) -->
-    <section class="general-intro-section text-center">
-      <div class="intro-badge mb-6">
-        <span>🤝 Conexión Local y Garantía Fiduciaria Escrow</span>
-      </div>
-      
-      <h1 class="hero-title mb-6">
-        La forma más <span class="accent-text">segura y confiable</span> de contratar servicios en tu vecindario
-      </h1>
-      
-      <p class="body-text max-w-2xl mx-auto mb-10 text-lg">
-        Conectamos las necesidades de tu hogar con profesionales de tu zona bajo una <strong>garantía fiduciaria Escrow</strong> blindada.
-      </p>
-
-      <button @click="openAuthModal(true)" class="premium-btn mx-auto">
-        <span>Comenzar ahora</span>
-        <span class="icon-circle">
-          <ArrowRight :size="18" />
-        </span>
+      <nav class="landing-nav" aria-label="Secciones principales">
+        <div class="nav-mode-switch" role="tablist" aria-label="Cambiar modo de Ofix">
+          <button
+            type="button"
+            :class="{ active: isDemandMode }"
+            role="tab"
+            :aria-selected="isDemandMode"
+            @click="switchMode('DEMANDA')"
+          >
+            Contratar a profesionales
+          </button>
+          <button
+            type="button"
+            :class="{ active: !isDemandMode }"
+            role="tab"
+            :aria-selected="!isDemandMode"
+            @click="switchMode('OFERTA')"
+          >
+            Ofrecer Servicio
+          </button>
+        </div>
+        <a href="#flujo">Flujo</a>
+        <a href="#confianza">Confianza</a>
+      </nav>
+      <button @click="openAuthModal(false)" class="secondary-btn login-btn">
+        Iniciar sesion
       </button>
+    </header>
+
+    <section class="hero-stage">
+      <div class="hero-copy">
+        <div class="intro-badge">
+          <Sparkles :size="14" />
+          <span>Conexión local mexicana con garantía Escrow</span>
+        </div>
+
+        <h1 class="hero-title">
+          Una sola plataforma para pedir ayuda o descubrir talento local.
+        </h1>
+
+        <p class="hero-lede">
+          Ofix conecta consumidores con proveedores y pequeños negocios cercanos mediante un switch dual:
+          <strong>Necesito</strong> para publicar tareas y <strong>Ofrezco</strong> para explorar perfiles.
+        </p>
+
+        <div class="hero-actions">
+          <button @click="openAuthModal(true)" class="premium-btn">
+            <span>Comenzar ahora</span>
+            <span class="icon-circle">
+              <ArrowRight :size="18" />
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="orbit-card orbit-card-demand">
+          <ClipboardList :size="18" />
+          <span>Necesito</span>
+          <strong>Publicar tarea</strong>
+        </div>
+        <div class="hero-device glass-panel">
+          <div class="device-topline">
+            <span class="status-dot"></span>
+            <span>Ofix switch activo</span>
+          </div>
+          <div class="device-switch">
+            <span :class="{ active: isDemandMode }">Necesito</span>
+            <span :class="{ active: !isDemandMode }">Ofrezco</span>
+            <div :class="['device-slider', state.activeMode.toLowerCase()]"></div>
+          </div>
+          <div class="device-map">
+            <div class="map-line line-a"></div>
+            <div class="map-line line-b"></div>
+            <div class="map-zone"></div>
+            <span class="map-pin-home"><MapPin :size="16" /></span>
+            <span class="map-pin-pro"><Wrench :size="15" /></span>
+          </div>
+          <div class="device-bottom">
+            <span>{{ currentMode.previewLabel }}</span>
+            <strong>{{ currentMode.previewStatus }}</strong>
+          </div>
+        </div>
+        <div class="orbit-card orbit-card-offer">
+          <Store :size="18" />
+          <span>Ofrezco</span>
+          <strong>Explorar perfiles</strong>
+        </div>
+      </div>
     </section>
 
-    <!-- Mode Selector Switch Centered Directly Below Intro -->
-    <div class="landing-switch-wrapper text-center">
-      <h3 class="switch-title mb-4 font-semibold text-muted text-xs uppercase tracking-wider">
-        Selecciona un modo para explorar su funcionamiento
-      </h3>
-      <div class="mode-switch-base glass-panel-sm mx-auto" @click="toggleMode">
-        <div :class="['mode-slider', state.activeMode.toLowerCase()]"></div>
-        <span :class="['mode-label-btn', { active: state.activeMode === 'DEMANDA' }]">
-          Contratar Tareas
-        </span>
-        <span :class="['mode-label-btn', { active: state.activeMode === 'OFERTA' }]">
-          Ofrecer Oficio
-        </span>
-      </div>
-    </div>
-
-    <!-- Mode-Specific Details Block (Shifts content based on activeMode selection) -->
-    <div class="mode-details-section">
-      <div class="text-center mb-10">
-        <span class="badge badge-success mb-2">
-          {{ state.activeMode === 'DEMANDA' ? 'Modo Cliente' : 'Modo Proveedor Técnico' }}
-        </span>
-        <h2 class="section-title">
-          <template v-if="state.activeMode === 'DEMANDA'">
-            Resuelve problemas de tu hogar con tranquilidad
-          </template>
-          <template v-else>
-            Haz crecer tu oficio con seguridad y libertad
-          </template>
-        </h2>
-        <p class="body-text max-w-xl mx-auto mt-2">
-          <template v-if="state.activeMode === 'DEMANDA'">
-            Describe lo que necesitas, compara ofertas de profesionales verificados en tu zona y mantén tu presupuesto seguro hasta confirmar que todo quedó perfecto.
-          </template>
-          <template v-else>
-            Accede al tablón de necesidades en tu vecindario, envía propuestas personalizadas y asegura el cobro de tus honorarios al 100% antes de salir de casa.
-          </template>
-        </p>
+    <section id="switch" class="switch-lab glass-panel">
+      <div class="switch-lab-copy">
+        <span class="badge badge-mode">{{ currentMode.badge }}</span>
+        <h2 class="section-title">{{ currentMode.highlight }}</h2>
+        <p class="body-text">{{ currentMode.description }}</p>
       </div>
 
-      <!-- Features Glass Grid -->
-      <div class="features-grid">
-        <div class="glass-panel text-left">
-          <div class="feature-icon bg-sunset">
-            <Zap :size="24" class="icon-orange" />
-          </div>
-          <h3 class="card-title mb-2">
-            <template v-if="state.activeMode === 'DEMANDA'">
-              1. Publica en segundos
-            </template>
-            <template v-else>
-              1. Busca en tu mapa
-            </template>
-          </h3>
-          <p class="body-text">
-            <template v-if="state.activeMode === 'DEMANDA'">
-              Describe lo que necesitas, fija un presupuesto estimado e indica el nivel de urgencia de tu tarea.
-            </template>
-            <template v-else>
-              Accede al tablón de tareas locales. Ofix oculta la dirección exacta para proteger la privacidad del cliente.
-            </template>
-          </p>
-        </div>
-
-        <div class="glass-panel text-left">
-          <div class="feature-icon bg-sage">
-            <HeartHandshake :size="24" class="icon-green" />
-          </div>
-          <h3 class="card-title mb-2">
-            <template v-if="state.activeMode === 'DEMANDA'">
-              2. Elige al experto
-            </template>
-            <template v-else>
-              2. Envía tu cotización
-            </template>
-          </h3>
-          <p class="body-text">
-            <template v-if="state.activeMode === 'DEMANDA'">
-              Revisa las propuestas de técnicos verificados en tu zona. Compara calificaciones, reseñas y portafolios de fotos.
-            </template>
-            <template v-else>
-              Escribe tu propuesta técnica, propón tu tarifa o acepta el presupuesto del cliente y fija tu tiempo de llegada.
-            </template>
-          </p>
-        </div>
-
-        <div class="glass-panel text-left">
-          <div class="feature-icon bg-obsidian">
-            <ShieldCheck :size="24" class="icon-white" />
-          </div>
-          <h3 class="card-title mb-2">
-            3. Depósito de Garantía (Escrow)
-          </h3>
-          <p class="body-text">
-            <template v-if="state.activeMode === 'DEMANDA'">
-              Tu pago se resguarda de forma segura en Escrow. Solo se libera al proveedor cuando marcas el trabajo como completado con éxito.
-            </template>
-            <template v-else>
-              El cliente deposita los fondos en garantía antes de que salgas a trabajar. Al terminar, liberas el saldo directo a tu cuenta.
-            </template>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Local Map Promotion Card -->
-    <div class="glass-panel map-promo-panel">
-      <div class="map-promo-content text-left">
-        <span class="badge badge-success mb-4">
-          <MapPin :size="12" class="mr-1" /> Conexión Local Activa
-        </span>
-        <h2 class="section-title mb-4">Vecinos ayudando a vecinos</h2>
-        <p class="body-text mb-6">
-          Ofix mapea en tiempo real a los proveedores y clientes en tu comunidad. Usamos círculos de geolocalización difuminados de 1.5 km para cuidar tu ubicación, liberándola únicamente cuando hay un trato de confianza activo y garantizado.
-        </p>
-        <button @click="openAuthModal(false)" class="secondary-btn">
-          Ver directorio local
+      <div class="mode-toggle" role="tablist" aria-label="Modo de exploración">
+        <button
+          type="button"
+          :class="['mode-option', { active: isDemandMode }]"
+          role="tab"
+          :aria-selected="isDemandMode"
+          @click="switchMode('DEMANDA')"
+        >
+          <ClipboardList :size="18" />
+          <span>Necesito</span>
+          <small>Publicar trabajo</small>
+        </button>
+        <button
+          type="button"
+          :class="['mode-option', { active: !isDemandMode }]"
+          role="tab"
+          :aria-selected="!isDemandMode"
+          @click="switchMode('OFERTA')"
+        >
+          <Store :size="18" />
+          <span>Ofrezco</span>
+          <small>Ver perfiles</small>
         </button>
       </div>
-      <div class="map-promo-visual">
-        <div class="simulated-map-circle">
-          <div class="simulated-pin pin-1"></div>
-          <div class="simulated-pin pin-2"></div>
-          <div class="simulated-pulse-area"></div>
+    </section>
+
+    <section class="communication-section">
+      <div class="section-heading">
+        <span class="badge badge-mode">Lectura del producto</span>
+        <h2 class="section-title">Cada modo habla con una intención diferente.</h2>
+      </div>
+
+      <Transition name="mode-shift" mode="out-in">
+        <div :key="`comm-${state.activeMode}`" class="communication-grid">
+          <article class="glass-panel communication-card intent-card">
+            <span class="communication-label">Pregunta inicial</span>
+            <h3>{{ currentMode.question }}</h3>
+            <p class="body-text">{{ currentMode.promise }}</p>
+            <div class="example-cloud" aria-label="Ejemplos del modo activo">
+              <span v-for="example in currentMode.examples" :key="example">{{ example }}</span>
+            </div>
+          </article>
+
+          <article class="glass-panel communication-card surface-card">
+            <span class="communication-label">Objeto principal</span>
+            <h3>{{ currentMode.primaryObject }}</h3>
+            <p class="body-text">{{ currentMode.surfaceText }}</p>
+            <div class="surface-token">
+              <ClipboardList v-if="isDemandMode" :size="22" />
+              <Store v-else :size="22" />
+              <strong>{{ currentMode.surfaceTitle }}</strong>
+            </div>
+          </article>
+
+          <div class="module-stack">
+            <article v-for="module in currentMode.modules" :key="module.title" class="module-note">
+              <span>{{ module.label }}</span>
+              <h4>{{ module.title }}</h4>
+              <p>{{ module.text }}</p>
+            </article>
+          </div>
+        </div>
+      </Transition>
+    </section>
+
+    <Transition name="mode-shift" mode="out-in">
+      <section :key="state.activeMode" class="mode-showcase">
+        <div class="mode-story">
+          <span class="mode-eyebrow">{{ currentMode.eyebrow }}</span>
+          <h2 class="mode-title">{{ currentMode.title }}</h2>
+          <p class="body-text">
+            La diferencia no es cosmetica: cambia el objeto principal de la pantalla.
+            En un modo ves trabajos publicados; en el otro ves perfiles y catalogos.
+          </p>
+
+          <div class="mode-actions">
+            <button @click="openAuthModal(true)" class="premium-btn">
+              <span>{{ currentMode.cta }}</span>
+              <span class="icon-circle">
+                <ArrowRight :size="18" />
+              </span>
+            </button>
+            <button @click="openAuthModal(false)" class="secondary-btn">
+              {{ currentMode.secondary }}
+            </button>
+          </div>
+
+          <div class="metric-strip">
+            <div v-for="metric in currentMode.metrics" :key="metric.label" class="metric-item">
+              <strong>{{ metric.value }}</strong>
+              <span>{{ metric.label }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-preview">
+          <div class="preview-shell">
+            <div class="preview-header">
+              <span class="preview-kicker">{{ currentMode.previewLabel }}</span>
+              <span class="preview-chip">
+                <Clock :size="13" />
+                {{ isDemandMode ? 'Urgencia visible' : 'Disponibilidad visible' }}
+              </span>
+            </div>
+
+            <div class="preview-main-card">
+              <div class="preview-icon">
+                <ClipboardList v-if="isDemandMode" :size="26" />
+                <Store v-else :size="26" />
+              </div>
+              <div>
+                <h3>{{ currentMode.previewTitle }}</h3>
+                <p>{{ currentMode.previewMeta }}</p>
+              </div>
+              <strong>{{ currentMode.previewPrice }}</strong>
+            </div>
+
+            <div class="privacy-band">
+              <div>
+                <span>Fase publica</span>
+                <strong>{{ currentMode.locationPublic }}</strong>
+              </div>
+              <div>
+                <span>Fase de contacto</span>
+                <strong>{{ currentMode.locationPrivate }}</strong>
+              </div>
+            </div>
+
+            <div class="preview-grid">
+              <div class="local-map">
+                <div class="map-road road-one"></div>
+                <div class="map-road road-two"></div>
+                <div class="map-radius"></div>
+                <span class="pin pin-main"><MapPinned :size="16" /></span>
+                <span class="pin pin-alt"><Navigation :size="15" /></span>
+              </div>
+              <div class="feed-card">
+                <span>{{ currentMode.boardTitle }}</span>
+                <ul>
+                  <li v-for="item in currentMode.boardItems" :key="item">{{ item }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </Transition>
+
+    <section id="flujo" class="flow-section">
+      <div class="section-heading">
+        <span class="badge badge-success">Arquitectura dual</span>
+        <h2 class="section-title">El switch cambia la intención, no solo el color.</h2>
+      </div>
+
+      <div class="flow-grid">
+        <article v-for="step in currentMode.flow" :key="step.title" class="glass-panel flow-card">
+          <div class="feature-icon">
+            <component :is="step.icon" :size="23" />
+          </div>
+          <h3 class="card-title">{{ step.title }}</h3>
+          <p class="body-text">{{ step.text }}</p>
+        </article>
+      </div>
+
+      <div class="timeline-panel glass-panel">
+        <div class="timeline-copy">
+          <span class="mode-eyebrow">Lo que ve el usuario</span>
+          <h3>{{ isDemandMode ? 'Tablon de tareas por resolver' : 'Catalogo vivo de talento local' }}</h3>
+          <p class="body-text">
+            Cada paso mantiene confianza, rapidez y cercania geografica sin exponer datos sensibles antes de tiempo.
+          </p>
+        </div>
+        <ol class="timeline-list">
+          <li v-for="(item, index) in currentMode.rail" :key="item">
+            <span>{{ index + 1 }}</span>
+            <p>{{ item }}</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="confianza" class="trust-section">
+      <div class="trust-card glass-panel">
+        <div class="trust-icon">
+          <ShieldCheck :size="34" />
+        </div>
+        <div>
+          <span class="badge badge-warning">Garantia fiduciaria</span>
+          <h2 class="section-title">Escrow crea confianza antes de que alguien toque la puerta.</h2>
+          <p class="body-text">
+            El pago se resguarda, la ubicacion exacta se protege por fases y la conversacion queda conectada
+            al trabajo acordado. Asi Ofix se siente cercano sin sacrificar seguridad.
+          </p>
         </div>
       </div>
-    </div>
 
-    <!-- FLOATING GLASSMORPHIC LOGIN/REGISTER MODAL -->
+      <div class="trust-grid">
+        <div class="trust-mini">
+          <BadgeCheck :size="20" />
+          <strong>Identidad verificada</strong>
+          <span>Perfiles y postulaciones con reputacion visible.</span>
+        </div>
+        <div class="trust-mini">
+          <CircleDollarSign :size="20" />
+          <strong>Pago protegido</strong>
+          <span>Los fondos se liberan al cerrar el trabajo.</span>
+        </div>
+        <div class="trust-mini">
+          <MessageCircle :size="20" />
+          <strong>Contacto contextual</strong>
+          <span>Solicitud, oferta y chat viven en un mismo flujo.</span>
+        </div>
+        <div class="trust-mini">
+          <HeartHandshake :size="20" />
+          <strong>Cercania real</strong>
+          <span>Vecinos, oficios y negocios de la zona.</span>
+        </div>
+      </div>
+    </section>
+
     <div v-if="isAuthModalOpen" class="modal-overlay" @click.self="closeAuthModal">
       <div class="modal-content glass-panel auth-modal-card text-left">
-        <button @click="closeAuthModal" class="close-btn-round">
+        <button @click="closeAuthModal" class="close-btn-round" type="button" aria-label="Cerrar">
           <X :size="18" />
         </button>
 
-        <!-- Tabs -->
         <div class="auth-tabs mb-6">
-          <button 
-            :class="['tab-btn', { active: !isRegister }]" 
+          <button
+            type="button"
+            :class="['tab-btn', { active: !isRegister }]"
             @click="isRegister = false"
           >
             Iniciar Sesión
           </button>
-          <button 
-            :class="['tab-btn', { active: isRegister }]" 
+          <button
+            type="button"
+            :class="['tab-btn', { active: isRegister }]"
             @click="isRegister = true"
           >
             Crear Cuenta
@@ -287,84 +634,89 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
         </p>
 
         <form @submit.prevent="handleSubmit" class="auth-form">
-          <!-- Name (Register Only) -->
           <div v-if="isRegister" class="form-group mb-4">
-            <label class="form-label">Nombre Completo</label>
+            <label class="form-label" for="auth-name">Nombre Completo</label>
             <div class="pill-input">
               <User :size="18" class="input-icon" />
-              <input 
-                v-model="name" 
-                type="text" 
-                placeholder="Juan Pérez" 
+              <input
+                id="auth-name"
+                v-model="name"
+                type="text"
+                placeholder="Juan Pérez"
                 required
               />
             </div>
             <span v-if="errors.name" class="error-msg">{{ errors.name }}</span>
           </div>
 
-          <!-- Email -->
           <div class="form-group mb-4">
-            <label class="form-label">Correo Electrónico</label>
+            <label class="form-label" for="auth-email">Correo Electrónico</label>
             <div class="pill-input">
               <Mail :size="18" class="input-icon" />
-              <input 
-                v-model="email" 
-                type="email" 
-                placeholder="correo@ejemplo.com" 
+              <input
+                id="auth-email"
+                v-model="email"
+                type="email"
+                placeholder="correo@ejemplo.com"
                 required
               />
             </div>
             <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
           </div>
 
-          <!-- Phone (Register Only) -->
           <div v-if="isRegister" class="form-group mb-4">
-            <label class="form-label">Teléfono de Contacto</label>
+            <label class="form-label" for="auth-phone">Teléfono de Contacto</label>
             <div class="pill-input">
               <Phone :size="18" class="input-icon" />
-              <input 
-                v-model="phone" 
-                type="tel" 
-                placeholder="5512345678" 
+              <input
+                id="auth-phone"
+                v-model="phone"
+                type="tel"
+                placeholder="5512345678"
                 required
               />
             </div>
             <span v-if="errors.phone" class="error-msg">{{ errors.phone }}</span>
           </div>
 
-          <!-- Password -->
           <div class="form-group mb-6">
-            <label class="form-label">Contraseña</label>
+            <label class="form-label" for="auth-password">Contraseña</label>
             <div class="pill-input">
               <Lock :size="18" class="input-icon" />
-              <input 
-                v-model="password" 
-                type="password" 
-                placeholder="••••••••" 
+              <input
+                id="auth-password"
+                v-model="password"
+                type="password"
+                placeholder="••••••••"
                 required
               />
             </div>
             <span v-if="errors.password" class="error-msg">{{ errors.password }}</span>
           </div>
 
-          <!-- Role Selector Dual Card -->
           <div class="role-selector-container mb-6">
-            <label class="form-label block text-left mb-2 text-xs font-semibold text-muted">¿Cuál es tu intención de ingreso?</label>
+            <label class="form-label block text-left mb-2 text-xs font-semibold text-muted">
+              ¿Cuál es tu intención de ingreso?
+            </label>
             <div class="role-cards">
-              <!-- Demand Card -->
-              <div 
+              <div
                 :class="['role-card', 'demand-card', { selected: selectedRole === 'DEMANDA' }]"
+                role="button"
+                tabindex="0"
                 @click="selectRole('DEMANDA')"
+                @keydown.enter.prevent="selectRole('DEMANDA')"
               >
                 <div class="role-check"></div>
                 <h4 class="role-title">Contratar ayuda</h4>
                 <p class="role-desc">Tengo un problema en casa y busco un técnico de confianza.</p>
               </div>
-              
-              <!-- Offer Card -->
-              <div 
+
+              <div
                 :class="['role-card', 'offer-card', { selected: selectedRole === 'OFERTA' }]"
+                role="button"
+                tabindex="0"
                 @click="selectRole('OFERTA')"
+                @keydown.enter.prevent="selectRole('OFERTA')"
               >
                 <div class="role-check"></div>
                 <h4 class="role-title">Ofrecer servicios</h4>
@@ -373,7 +725,6 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
             </div>
           </div>
 
-          <!-- Action Button -->
           <button type="submit" class="premium-btn w-full">
             <span>{{ isRegister ? 'Crear Cuenta y Entrar' : 'Iniciar Sesión' }}</span>
             <span class="icon-circle">
@@ -388,267 +739,1028 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
 
 <style scoped>
 .welcome-container {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  padding: 0 0 60px 0;
-  position: relative;
+  gap: 34px;
+  padding: 0 0 72px;
+  isolation: isolate;
 }
 
-/* Portada Floating Header */
+.landing-grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(90deg, rgba(24, 27, 25, 0.04) 1px, transparent 1px),
+    linear-gradient(rgba(24, 27, 25, 0.035) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
 .portada-header {
-  position: absolute;
+  position: sticky;
   top: 10px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
   z-index: 100;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 12px 9px 16px;
+  border: 1px solid var(--frost-border);
+  border-radius: var(--radius-pill);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.34)),
+    var(--frost-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 18px 44px -28px rgba(24, 27, 25, 0.28);
   animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .brand-logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  width: fit-content;
+  border: 0;
+  background: transparent;
   cursor: pointer;
 }
 
 .brand-logo-img {
   height: 28px;
-  object-fit: contain;
   display: block;
-  transition: opacity 0.2s ease;
+  object-fit: contain;
 }
 
-.brand-logo-img:hover {
-  opacity: 0.9;
-}
-
-/* General Intro Section / Portada Section */
-.general-intro-section {
-  min-height: 65vh; /* Occupies 2/3 of viewport height */
+.landing-nav {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  padding: 100px 24px 40px 24px; /* Spacious top padding for floating logo */
-  border: none;
-  background: transparent;
-  box-shadow: none;
+  gap: 8px;
+}
+
+.nav-mode-switch {
   position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.intro-badge {
-  display: inline-block;
-  padding: 6px 14px;
-  background-color: var(--accent-light);
-  color: var(--accent);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 12px;
-  border-radius: var(--radius-pill);
-  transition: all 0.4s ease;
-}
-
-.hero-title {
-  font-family: var(--font-display);
-  font-size: 62px; /* High-impact display size */
-  font-weight: 800;
-  letter-spacing: -0.04em; /* Tight letter-spacing for premium editorial punch */
-  line-height: 1.1;
-  max-width: 950px;
-}
-
-.general-intro-section .body-text {
-  font-size: 21px;
-  line-height: 1.65;
-  max-width: 800px;
-  color: var(--text-muted);
-}
-
-.mb-6 { margin-bottom: 24px; }
-.mb-8 { margin-bottom: 32px; }
-.mb-2 { margin-bottom: 8px; }
-.mb-4 { margin-bottom: 16px; }
-.mb-10 { margin-bottom: 40px; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.max-w-xl { max-w: 580px; }
-.max-w-2xl { max-w: 720px; }
-.text-lg { font-size: 18px; line-height: 1.6; }
-
-.accent-text {
-  color: var(--accent);
-  font-weight: 800;
-  transition: color 0.4s ease;
-}
-
-/* Landing Switch Wrapper */
-.landing-switch-wrapper {
-  padding: 10px 0;
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
-}
-
-.switch-title {
-  font-size: 11px;
-  letter-spacing: 0.1em;
-}
-
-.mode-switch-base {
-  display: flex;
-  position: relative;
-  background-color: rgba(24, 27, 25, 0.05);
-  border-radius: var(--radius-pill);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
   padding: 4px;
-  cursor: pointer;
-  align-items: center;
-  border: 1px solid var(--frost-border);
-  box-shadow: 0 4px 12px -4px var(--clay-shadow);
-  user-select: none;
-  width: fit-content;
-  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: var(--radius-pill);
+  background: rgba(24, 27, 25, 0.055);
 }
 
-.mode-label-btn {
+.nav-mode-switch button {
+  border: 0;
+  border-radius: var(--radius-pill);
+  padding: 8px 13px;
+  color: var(--text-muted);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nav-mode-switch button.active {
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: 0 10px 22px -16px var(--accent);
+}
+
+.landing-nav a,
+.ghost-link {
+  color: var(--text-muted);
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-muted);
-  padding: 10px 24px;
+  text-decoration: none;
   border-radius: var(--radius-pill);
-  z-index: 2;
-  transition: color 0.4s ease;
+  padding: 9px 13px;
 }
 
-.mode-label-btn.active {
+.landing-nav a:hover,
+.ghost-link:hover {
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.login-btn {
+  padding: 9px 17px;
+  font-size: 13px;
+}
+
+.hero-stage {
+  min-height: calc(100vh - 112px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(360px, 0.78fr);
+  align-items: center;
+  gap: clamp(28px, 6vw, 80px);
+  padding: 16px 10px 34px;
+}
+
+.hero-copy {
+  max-width: 780px;
+  animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.intro-badge,
+.mode-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: var(--accent-text);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.18)),
+    var(--accent-light);
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  border-radius: var(--radius-pill);
+  padding: 8px 13px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero-title {
+  max-width: 860px;
+  margin: 22px 0 22px;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: clamp(44px, 8vw, 92px);
+  font-weight: 800;
+  line-height: 0.93;
+  letter-spacing: 0;
+}
+
+.hero-lede {
+  max-width: 680px;
+  color: var(--text-muted);
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.58;
+}
+
+.hero-lede strong {
+  color: var(--text-dark);
+}
+
+.hero-actions,
+.mode-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.hero-orbit {
+  position: relative;
+  min-height: 620px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: floatIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+.hero-orbit::before {
+  content: '';
+  position: absolute;
+  width: min(520px, 82vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 42%, var(--accent-glow), transparent 58%),
+    conic-gradient(from 180deg, rgba(255, 130, 53, 0.24), rgba(59, 96, 67, 0.22), rgba(255, 255, 255, 0.1), rgba(255, 130, 53, 0.24));
+  filter: blur(6px);
+  opacity: 0.82;
+}
+
+.hero-device {
+  position: relative;
+  width: min(390px, 92vw);
+  min-height: 510px;
+  padding: 20px;
+  border-radius: 38px;
+  transform: rotate(-2deg);
+  box-shadow:
+    0 34px 90px -44px rgba(24, 27, 25, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.device-topline,
+.device-bottom,
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 7px var(--accent-glow);
+}
+
+.device-switch {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin: 22px 0;
+  padding: 5px;
+  border-radius: var(--radius-pill);
+  background: rgba(24, 27, 25, 0.06);
+}
+
+.device-switch span {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 12px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.device-switch span.active {
   color: #ffffff;
 }
 
-.mode-slider {
+.device-slider {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
+  top: 5px;
+  bottom: 5px;
+  width: calc(50% - 5px);
   border-radius: var(--radius-pill);
-  z-index: 1;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background: var(--accent);
+  box-shadow: 0 10px 22px -12px var(--accent);
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
 }
 
-.mode-slider.demanda {
-  left: 4px;
-  right: 50%;
-  background-color: var(--sunset-orange);
+.device-slider.demanda {
+  transform: translateX(0);
 }
 
-.mode-slider.oferta {
-  left: 50%;
-  right: 4px;
-  background-color: var(--verde-terraria);
+.device-slider.oferta {
+  transform: translateX(calc(100% + 0px));
 }
 
-/* Mode details section */
-.mode-details-section {
-  animation: fadeIn 0.6s ease-in-out;
+.device-map {
+  position: relative;
+  height: 310px;
+  overflow: hidden;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 32% 35%, var(--accent-glow), transparent 26%),
+    linear-gradient(135deg, #ebe3da, #f8f3ed);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 16px 38px rgba(105, 95, 87, 0.09);
 }
 
-.features-grid {
+.map-line,
+.map-road {
+  position: absolute;
+  border-radius: var(--radius-pill);
+  background: rgba(105, 95, 87, 0.11);
+}
+
+.line-a {
+  width: 360px;
+  height: 34px;
+  top: 76px;
+  left: -42px;
+  transform: rotate(-18deg);
+}
+
+.line-b {
+  width: 280px;
+  height: 26px;
+  bottom: 76px;
+  right: -62px;
+  transform: rotate(32deg);
+}
+
+.map-zone {
+  position: absolute;
+  width: 148px;
+  height: 148px;
+  left: 88px;
+  top: 84px;
+  border-radius: 50%;
+  border: 1px dashed var(--accent);
+  background: var(--accent-glow);
+  animation: pulseSoft 3.8s ease-in-out infinite alternate;
+}
+
+.map-pin-home,
+.map-pin-pro,
+.pin {
+  position: absolute;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-top: 20px;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: 0 14px 24px -12px rgba(24, 27, 25, 0.42);
+}
+
+.map-pin-home {
+  top: 128px;
+  left: 142px;
+}
+
+.map-pin-pro {
+  right: 76px;
+  bottom: 78px;
+  background: var(--obsidian-ceramic);
+}
+
+.device-bottom {
+  margin-top: 18px;
+}
+
+.device-bottom strong {
+  color: var(--text-dark);
+}
+
+.orbit-card {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 5px;
+  min-width: 160px;
+  padding: 16px;
+  border-radius: 24px;
+  border: 1px solid var(--frost-border);
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 22px 48px -34px rgba(24, 27, 25, 0.38);
+  font-family: var(--font-display);
+}
+
+.orbit-card span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.orbit-card strong {
+  color: var(--text-dark);
+  font-size: 15px;
+}
+
+.orbit-card-demand {
+  top: 72px;
+  left: 0;
+  color: var(--sunset-orange-dark);
+}
+
+.orbit-card-offer {
+  right: 0;
+  bottom: 96px;
+  color: var(--verde-terraria);
+}
+
+.switch-lab {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: center;
+  padding: clamp(20px, 4vw, 34px);
+}
+
+.switch-lab-copy {
+  max-width: 580px;
+}
+
+.switch-lab-copy .section-title {
+  margin: 10px 0;
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 800;
+}
+
+.badge-mode {
+  background: var(--accent-light);
+  color: var(--accent-text);
+}
+
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-width: min(430px, 100%);
+  padding: 8px;
+  border-radius: 32px;
+  background: rgba(24, 27, 25, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.56);
+}
+
+.mode-option {
+  display: grid;
+  justify-items: start;
+  gap: 3px;
+  min-height: 92px;
+  padding: 16px;
+  border: 0;
+  border-radius: 24px;
+  color: var(--text-muted);
+  background: transparent;
+  font-family: var(--font-display);
+  cursor: pointer;
+}
+
+.mode-option span {
+  color: var(--text-dark);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.mode-option small {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mode-option.active {
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: 0 18px 34px -24px var(--accent);
+}
+
+.mode-option.active span,
+.mode-option.active small {
+  color: #ffffff;
+}
+
+.communication-section {
+  display: grid;
+  gap: 20px;
+  padding-top: 12px;
+}
+
+.communication-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 0.9fr) minmax(280px, 0.78fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.communication-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 330px;
+  padding: 28px;
+}
+
+.communication-label {
+  width: fit-content;
+  color: var(--accent-text);
+  background: var(--accent-light);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: var(--radius-pill);
+  padding: 7px 11px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.communication-card h3 {
+  margin: 20px 0 12px;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: clamp(28px, 3.3vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.example-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.example-cloud span {
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-pill);
+  padding: 9px 12px;
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.52);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.surface-card {
+  background:
+    linear-gradient(145deg, rgba(24, 27, 25, 0.88), rgba(24, 27, 25, 0.72)),
+    var(--obsidian-ceramic);
+}
+
+.surface-card .communication-label {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.surface-card h3,
+.surface-card .body-text {
+  color: #ffffff;
+}
+
+.surface-card .body-text {
+  opacity: 0.74;
+}
+
+.surface-token {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-top: auto;
+  padding: 15px;
+  border-radius: 22px;
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.surface-token strong {
+  font-family: var(--font-display);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.module-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.module-note {
+  min-height: 102px;
+  padding: 18px;
+  border: 1px solid var(--frost-border);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.module-note span {
+  display: block;
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.module-note h4 {
+  margin: 6px 0 5px;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.15;
+}
+
+.module-note p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.38;
+}
+
+.mode-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 0.88fr) minmax(380px, 1fr);
+  align-items: center;
+  gap: clamp(26px, 5vw, 70px);
+  padding: 34px 0 20px;
+}
+
+.mode-story {
+  padding: 10px;
+}
+
+.mode-title {
+  margin: 18px 0 16px;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5.6vw, 68px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.metric-item {
+  padding: 18px 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.48);
+  border: 1px solid var(--frost-border);
+}
+
+.metric-item strong {
+  display: block;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.metric-item span {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.product-preview {
+  position: relative;
+}
+
+.product-preview::before {
+  content: '';
+  position: absolute;
+  inset: 26px -18px -18px 46px;
+  border-radius: 42px;
+  background: var(--accent);
+  opacity: 0.12;
+  filter: blur(18px);
+}
+
+.preview-shell {
+  position: relative;
+  padding: clamp(18px, 3vw, 28px);
+  border-radius: 42px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.74), rgba(255, 255, 255, 0.34)),
+    var(--frost-bg);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 34px 90px -54px rgba(24, 27, 25, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.preview-kicker {
+  color: var(--accent-text);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.preview-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.58);
+}
+
+.preview-main-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 30px;
+  color: #ffffff;
+  background:
+    radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.18), transparent 34%),
+    var(--obsidian-ceramic);
+  box-shadow: 0 22px 52px -34px rgba(24, 27, 25, 0.62);
+}
+
+.preview-icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.preview-main-card h3 {
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.preview-main-card p {
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+
+.preview-main-card strong {
+  color: #ffffff;
+  font-family: var(--font-display);
+  white-space: nowrap;
+}
+
+.privacy-band {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.privacy-band div {
+  min-height: 84px;
+  padding: 15px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+}
+
+.privacy-band span,
+.feed-card span {
+  display: block;
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.privacy-band strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.local-map,
+.feed-card {
+  min-height: 238px;
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.68);
+  background: rgba(255, 255, 255, 0.44);
+}
+
+.local-map {
+  position: relative;
+  background:
+    radial-gradient(circle at 46% 50%, var(--accent-glow), transparent 35%),
+    #e9e1d6;
+}
+
+.road-one {
+  width: 230px;
+  height: 28px;
+  left: -28px;
+  top: 70px;
+  transform: rotate(28deg);
+}
+
+.road-two {
+  width: 250px;
+  height: 22px;
+  right: -52px;
+  bottom: 54px;
+  transform: rotate(-22deg);
+}
+
+.map-radius {
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  top: 62px;
+  left: 52px;
+  border-radius: 50%;
+  border: 1px dashed var(--accent);
+  background: var(--accent-glow);
+}
+
+.pin-main {
+  top: 96px;
+  left: 88px;
+}
+
+.pin-alt {
+  right: 42px;
+  bottom: 48px;
+  background: var(--obsidian-ceramic);
+}
+
+.feed-card {
+  padding: 18px;
+}
+
+.feed-card ul {
+  display: grid;
+  gap: 11px;
+  margin-top: 14px;
+  list-style: none;
+}
+
+.feed-card li {
+  padding: 12px;
+  border-radius: 18px;
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.58);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.flow-section,
+.trust-section {
+  display: grid;
+  gap: 22px;
+  padding-top: 24px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.section-heading .section-title {
+  max-width: 640px;
+  font-size: clamp(30px, 4.2vw, 50px);
+  font-weight: 800;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.flow-card {
+  min-height: 240px;
+  padding: 26px;
 }
 
 .feature-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  display: flex;
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 22px;
+  border-radius: 18px;
+  color: #ffffff;
+  background: var(--accent);
+  box-shadow: 0 16px 34px -24px var(--accent);
+}
+
+.flow-card .card-title {
+  margin-bottom: 10px;
+}
+
+.timeline-panel {
+  display: grid;
+  grid-template-columns: 0.7fr 1fr;
+  gap: 28px;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
+  padding: clamp(22px, 4vw, 36px);
 }
 
-.bg-sunset { background-color: var(--accent-light); }
-.bg-sage { background-color: var(--accent-light); }
-.bg-obsidian { background-color: var(--obsidian-ceramic); }
+.timeline-copy h3 {
+  margin: 12px 0 10px;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.6vw, 42px);
+  line-height: 1;
+}
 
-.icon-orange { color: var(--sunset-orange); }
-.icon-green { color: var(--verde-terraria); }
-.icon-white { color: #ffffff; }
+.timeline-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
 
-/* Map Promo Panel */
-.map-promo-panel {
-  display: flex;
-  flex-direction: row;
+.timeline-list li {
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 40px;
-  padding: 40px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.56);
 }
 
-.map-promo-content {
-  flex: 1;
-}
-
-.map-promo-visual {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 240px;
-}
-
-.simulated-map-circle {
-  width: 220px;
-  height: 220px;
+.timeline-list span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: radial-gradient(circle, #EBE3DA 0%, #DED6CD 100%);
+  color: #ffffff;
+  background: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.timeline-list p {
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.trust-section {
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+
+.trust-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 22px;
+  align-items: start;
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.trust-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 26px;
+  color: #ffffff;
+  background: var(--obsidian-ceramic);
+}
+
+.trust-card .section-title {
+  margin: 12px 0 12px;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 800;
+}
+
+.trust-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.trust-mini {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  min-height: 154px;
+  padding: 20px;
+  border-radius: 28px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.48);
   border: 1px solid var(--frost-border);
-  position: relative;
-  box-shadow: inset 0 4px 10px rgba(0,0,0,0.05), 0 10px 24px -10px var(--clay-shadow);
 }
 
-.simulated-pin {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+.trust-mini svg {
+  color: var(--accent-text);
 }
 
-.pin-1 {
-  background-color: var(--sunset-orange);
-  top: 30%;
-  left: 40%;
+.trust-mini strong {
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: 17px;
 }
 
-.pin-2 {
-  background-color: var(--verde-terraria);
-  top: 60%;
-  left: 70%;
+.trust-mini span {
+  font-size: 13px;
+  line-height: 1.4;
 }
 
-.simulated-pulse-area {
-  position: absolute;
-  top: 20%;
-  left: 20%;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 1px dashed var(--accent);
-  background-color: var(--accent-glow);
-  opacity: 0.4;
-  animation: floatCircle 4s ease-in-out infinite alternate;
-}
-
-/* Modal specific styles */
 .auth-modal-card {
   width: 100%;
   max-width: 500px;
@@ -672,18 +1784,13 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
-  outline: none; /* Removes outline completely */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .close-btn-round:hover {
   background: #ffffff;
   color: var(--accent);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.close-btn-round:focus {
-  outline: none; /* Ensures no outline when active */
 }
 
 .auth-tabs {
@@ -713,15 +1820,10 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
   box-shadow: 0 4px 12px -4px var(--clay-shadow);
 }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-}
-
+.auth-form,
 .form-group {
   display: flex;
   flex-direction: column;
-  text-align: left;
 }
 
 .form-label {
@@ -814,51 +1916,194 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
   line-height: 1.4;
 }
 
-/* Animations */
-@keyframes floatCircle {
-  0% { transform: translateY(-5px) scale(0.95); }
-  100% { transform: translateY(5px) scale(1.05); }
+.mb-2 { margin-bottom: 8px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-sm { font-size: 14px; }
+.w-full { width: 100%; }
+.block { display: block; }
+
+.mode-shift-enter-active,
+.mode-shift-leave-active {
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.mode-shift-enter-from,
+.mode-shift-leave-to {
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
 }
 
 @keyframes slideDown {
-  from { transform: translateY(-20px); opacity: 0; }
+  from { transform: translateY(-18px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes fadeInUp {
-  from { transform: translateY(30px); opacity: 0; }
+  from { transform: translateY(34px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+@keyframes floatIn {
+  from { transform: translateY(22px) scale(0.96); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-@media (max-width: 768px) {
+@keyframes pulseSoft {
+  from { transform: scale(0.94); opacity: 0.48; }
+  to { transform: scale(1.08); opacity: 0.78; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .hero-stage,
+  .mode-showcase,
+  .communication-grid,
+  .timeline-panel,
+  .trust-section {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-stage {
+    min-height: auto;
+    padding-top: 18px;
+  }
+
+  .hero-orbit {
+    min-height: 540px;
+  }
+
+  .switch-lab {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-toggle {
+    width: 100%;
+  }
+
+  .flow-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
   .welcome-container {
-    padding: 10px 10px 40px 10px;
+    gap: 26px;
+    padding-bottom: 48px;
   }
-  
+
+  .portada-header {
+    position: relative;
+    top: 0;
+    grid-template-columns: 1fr auto;
+    border-radius: 28px;
+  }
+
+  .landing-nav {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+    order: 3;
+  }
+
+  .landing-nav > a {
+    display: none;
+  }
+
+  .nav-mode-switch {
+    width: 100%;
+  }
+
+  .nav-mode-switch button {
+    padding: 8px 9px;
+    font-size: 11px;
+    white-space: normal;
+    line-height: 1.1;
+  }
+
+  .hero-stage {
+    padding: 12px 0 18px;
+  }
+
   .hero-title {
-    font-size: 34px;
-    line-height: 1.15;
+    font-size: clamp(42px, 14vw, 64px);
   }
-  
-  .general-intro-section {
-    padding: 60px 16px 30px 16px;
+
+  .hero-lede {
+    font-size: 17px;
+  }
+
+  .hero-orbit {
+    min-height: 470px;
+  }
+
+  .hero-device {
+    min-height: 438px;
+    padding: 16px;
+    transform: none;
+  }
+
+  .device-map {
+    height: 250px;
+  }
+
+  .orbit-card {
+    min-width: 134px;
+    padding: 13px;
+  }
+
+  .orbit-card-demand {
+    top: 28px;
+  }
+
+  .orbit-card-offer {
+    bottom: 26px;
+  }
+
+  .mode-toggle,
+  .metric-strip,
+  .privacy-band,
+  .preview-grid,
+  .trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-option {
+    min-height: 76px;
+  }
+
+  .communication-card {
     min-height: auto;
   }
-  
-  .map-promo-panel {
-    flex-direction: column;
-    padding: 24px;
+
+  .preview-main-card {
+    grid-template-columns: auto 1fr;
   }
-  
-  .map-promo-visual {
-    min-height: 180px;
+
+  .preview-main-card strong {
+    grid-column: 1 / -1;
   }
-  
+
+  .trust-card {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading {
+    display: grid;
+    align-items: start;
+  }
+
   .role-cards {
     flex-direction: column;
     gap: 12px;

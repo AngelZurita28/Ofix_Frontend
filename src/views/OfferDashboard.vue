@@ -129,12 +129,13 @@ const getDistanceText = (job: Job) => {
 
 <template>
   <div class="dashboard-container">
-    <!-- Provider Sub-Header -->
-    <div class="dashboard-header mb-6">
-      <div class="header-left text-left">
-        <span class="micro-label font-bold text-green">MODO PROVEEDOR</span>
-        <h2 class="section-title">Panel Técnico Local</h2>
-        <p class="body-text">Encuentra trabajos activos y administra tu perfil profesional</p>
+    <section class="provider-command glass-panel mb-4">
+      <div class="command-copy text-left">
+        <h2 class="section-title">Tu oficio convertido en oportunidades cercanas.</h2>
+        <p class="body-text">
+          Revisa tareas abiertas por zona aproximada, postúlate con una propuesta clara y espera el fondeo
+          Escrow antes de salir. El panel prioriza trabajos accionables, contratos activos y reputación.
+        </p>
       </div>
       <button @click="isProfileModalOpen = true" class="premium-btn">
         <span>Configurar Perfil</span>
@@ -142,14 +143,14 @@ const getDistanceText = (job: Job) => {
           <Settings :size="18" />
         </span>
       </button>
-    </div>
+    </section>
 
     <!-- Main Layout (Sidebar + Content) -->
     <div class="dashboard-grid">
       <!-- Left Column: Quick Profile Info / Filters -->
       <div class="sidebar-column">
         <!-- Quick Profile Card -->
-        <div v-if="providerProfile" class="sidebar-section glass-panel text-left mb-4">
+        <div v-if="providerProfile" class="sidebar-section glass-panel text-left mb-4 profile-command-card">
           <div class="flex items-center gap-3 mb-4">
             <img :src="providerProfile.profileImg" class="mini-profile-avatar" />
             <div>
@@ -172,9 +173,12 @@ const getDistanceText = (job: Job) => {
 
         <!-- Active Chats & Contracts (Independent from board) -->
         <div class="sidebar-section glass-panel mb-4 text-left">
-          <h3 class="card-title mb-4 flex items-center gap-2">
-            <MessageSquare :size="16" class="text-green" /> Tratos en Curso ({{ providerContracts.length }})
-          </h3>
+          <div class="panel-heading">
+            <span class="panel-label">Seguimiento</span>
+            <h3 class="card-title flex items-center gap-2">
+              <MessageSquare :size="16" class="text-green" /> Tratos en curso ({{ providerContracts.length }})
+            </h3>
+          </div>
           <div v-if="providerContracts.length === 0" class="empty-state py-4 text-center">
             <p class="body-text text-xs opacity-75">No tienes contratos activos en curso.</p>
           </div>
@@ -200,8 +204,11 @@ const getDistanceText = (job: Job) => {
         </div>
 
         <!-- Directories Filters -->
-        <div class="sidebar-section glass-panel text-left">
-          <h3 class="card-title mb-4">Filtrar Tareas Cercanas</h3>
+        <div class="sidebar-section glass-panel text-left filter-panel">
+          <div class="panel-heading">
+            <span class="panel-label">Tablón local</span>
+            <h3 class="card-title">Filtrar tareas cercanas</h3>
+          </div>
           
           <!-- Category Selector -->
           <div class="filter-group mb-4">
@@ -258,10 +265,13 @@ const getDistanceText = (job: Job) => {
 
       <!-- Right Column: Local job feed -->
       <div class="content-column">
-        <div class="glass-panel">
+        <div class="glass-panel content-surface">
           <!-- Filter/View controller bar -->
           <div class="controls-bar mb-6">
-            <h3 class="card-title text-lg">Trabajos Abiertos en tu Vecindario</h3>
+            <div class="surface-title text-left">
+              <span class="panel-label">Demanda local disponible</span>
+              <h3 class="card-title text-lg">Trabajos abiertos en tu vecindario</h3>
+            </div>
             
             <div class="view-toggle">
               <button 
@@ -913,5 +923,190 @@ const getDistanceText = (job: Job) => {
   border-radius: 4px;
   background: rgba(0,0,0,0.1);
   outline: none;
+}
+
+.dashboard-container {
+  padding: 8px 0 48px;
+}
+
+.provider-command {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  overflow: hidden;
+  padding: clamp(16px, 2.6vw, 24px);
+}
+
+.provider-command::before {
+  content: '';
+  position: absolute;
+  inset: -38% -8% auto auto;
+  width: 390px;
+  height: 390px;
+  border-radius: 50%;
+  background: var(--verde-terraria);
+  opacity: 0.14;
+  filter: blur(24px);
+}
+
+.command-copy,
+.provider-command > .premium-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.command-kicker,
+.panel-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  color: var(--verde-terraria);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.command-copy .section-title {
+  max-width: 690px;
+  margin: 0 0 8px;
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 800;
+  line-height: 1.04;
+}
+
+.command-copy .body-text {
+  max-width: 740px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 22px;
+}
+
+.sidebar-column {
+  position: sticky;
+  top: 118px;
+}
+
+.panel-heading {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.profile-command-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-command-card::after {
+  content: '';
+  position: absolute;
+  right: -54px;
+  top: -54px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: var(--sage-wash);
+  opacity: 0.9;
+  z-index: -1;
+}
+
+.content-surface {
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.surface-title .card-title {
+  margin-top: 5px;
+}
+
+.job-feed-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.28)),
+    var(--frost-bg);
+}
+
+.job-feed-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--verde-terraria);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.job-feed-card:hover::before {
+  opacity: 1;
+}
+
+.budget-badge {
+  border-radius: 18px;
+  border: 1px solid var(--frost-border);
+}
+
+.contract-mini-card {
+  position: relative;
+  overflow: hidden;
+  padding: 14px;
+}
+
+.contract-mini-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--verde-terraria);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.contract-mini-card:hover::before {
+  opacity: 1;
+}
+
+.map-canvas {
+  border-radius: 32px;
+}
+
+@media (max-width: 1060px) {
+  .provider-command {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar-column {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .provider-command {
+    padding: 18px;
+  }
+
+  .controls-bar {
+    align-items: stretch;
+  }
+
+  .view-toggle {
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    justify-content: center;
+  }
 }
 </style>

@@ -4,7 +4,8 @@ import { useStore } from '../store';
 import type { Bid } from '../store';
 import { 
   Search, MapPin, Star, Sparkles, SlidersHorizontal, 
-  List, Map, Plus, X, Clock, FileText, ChevronRight 
+  List, Map, Plus, X, Clock, FileText, ChevronRight,
+  BadgeCheck
 } from 'lucide-vue-next';
 
 const { 
@@ -148,31 +149,38 @@ const selectJob = (id: number) => {
 
 <template>
   <div class="dashboard-container">
-    <!-- Client Sub-Header -->
-    <div class="dashboard-header mb-6">
-      <div class="header-left text-left">
-        <span class="micro-label font-bold text-orange">MODO CLIENTE</span>
-        <h2 class="section-title">Encuentra ayuda en tu zona</h2>
-        <p class="body-text">Directorio y tablón de servicios locales garantizados</p>
+    <section class="dashboard-command glass-panel mb-4">
+      <div class="command-copy text-left">
+        <h2 class="section-title">Contrata con contexto, privacidad y garantía.</h2>
+        <p class="body-text">
+          Publica una necesidad para recibir postulaciones o explora perfiles cuando ya sabes qué oficio necesitas.
+          Ofix mantiene la zona aproximada visible y reserva la dirección exacta para el trato aceptado.
+        </p>
       </div>
       <button @click="state.isPublishingModalOpen = true" class="premium-btn">
-        <span>Publicar Necesidad</span>
+        <span>Solicitar Tarea</span>
         <span class="icon-circle">
           <Plus :size="18" />
         </span>
       </button>
-    </div>
+    </section>
 
     <!-- Main Layout (Sidebar + Content) -->
     <div class="dashboard-grid">
       <!-- Left Column: Providers directory / Filters / My Tasks -->
       <div class="sidebar-column">
         <!-- Dashboard Navigation Tabs -->
-        <div class="sidebar-section glass-panel mb-4">
-          <h3 class="card-title mb-4">Mis Tareas Publicadas</h3>
+        <div class="sidebar-section glass-panel mb-4 mission-panel">
+          <div class="panel-heading">
+            <span class="panel-label">Tu tablero</span>
+            <h3 class="card-title">Mis tareas publicadas</h3>
+          </div>
           <div v-if="clientJobs.length === 0" class="empty-state text-center py-4">
             <FileText :size="32" class="text-muted mx-auto mb-2 opacity-50" />
             <p class="body-text text-sm">No has publicado tareas aún.</p>
+            <button @click="state.isPublishingModalOpen = true" class="secondary-btn mini-action">
+              Crear primera tarea
+            </button>
           </div>
           <div v-else class="jobs-list">
             <div 
@@ -199,8 +207,11 @@ const selectJob = (id: number) => {
         </div>
 
         <!-- Directories Filters -->
-        <div class="sidebar-section glass-panel">
-          <h3 class="card-title mb-4">Filtros de Búsqueda</h3>
+        <div class="sidebar-section glass-panel filter-panel">
+          <div class="panel-heading">
+            <span class="panel-label">Directorio</span>
+            <h3 class="card-title">Filtros de búsqueda</h3>
+          </div>
           
           <!-- Category Selector -->
           <div class="filter-group mb-4 text-left">
@@ -326,33 +337,39 @@ const selectJob = (id: number) => {
         </div>
 
         <!-- Directory Tab Panel -->
-        <div class="glass-panel">
+        <div class="glass-panel content-surface">
           <!-- Filter/View controller bar -->
           <div class="controls-bar mb-6">
-            <div class="search-wrapper">
-              <div class="pill-input">
-                <Search :size="18" class="input-icon" />
-                <input 
-                  v-model="searchQuery" 
-                  type="text" 
-                  placeholder="Buscar fontanero, electricista..." 
-                />
-              </div>
+            <div class="surface-title text-left">
+              <span class="panel-label">Oferta local disponible</span>
+              <h3 class="card-title text-lg">Directorio de talento cercano</h3>
             </div>
-            
-            <div class="view-toggle">
-              <button 
-                :class="['toggle-btn', { active: currentViewMode === 'list' }]"
-                @click="currentViewMode = 'list'"
-              >
-                <List :size="16" class="mr-1" /> Lista
-              </button>
-              <button 
-                :class="['toggle-btn', { active: currentViewMode === 'map' }]"
-                @click="currentViewMode = 'map'"
-              >
-                <Map :size="16" class="mr-1" /> Mapa
-              </button>
+            <div class="toolbar-actions">
+              <div class="search-wrapper">
+                <div class="pill-input">
+                  <Search :size="18" class="input-icon" />
+                  <input 
+                    v-model="searchQuery" 
+                    type="text" 
+                    placeholder="Buscar fontanero, electricista..." 
+                  />
+                </div>
+              </div>
+              
+              <div class="view-toggle">
+                <button 
+                  :class="['toggle-btn', { active: currentViewMode === 'list' }]"
+                  @click="currentViewMode = 'list'"
+                >
+                  <List :size="16" class="mr-1" /> Lista
+                </button>
+                <button 
+                  :class="['toggle-btn', { active: currentViewMode === 'map' }]"
+                  @click="currentViewMode = 'map'"
+                >
+                  <Map :size="16" class="mr-1" /> Mapa
+                </button>
+              </div>
             </div>
           </div>
 
@@ -389,6 +406,10 @@ const selectJob = (id: number) => {
                   
                   <!-- Badges list -->
                   <div class="badges-row mb-3">
+                    <span class="trust-chip">
+                      <BadgeCheck :size="12" />
+                      Verificado
+                    </span>
                     <span v-for="badge in provider.badges" :key="badge" class="badge badge-success text-xs">
                       {{ badge }}
                     </span>
@@ -1140,5 +1161,216 @@ const selectJob = (id: number) => {
   border-radius: 4px;
   background: rgba(0,0,0,0.1);
   outline: none;
+}
+
+.dashboard-container {
+  padding: 8px 0 48px;
+}
+
+.dashboard-command {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  overflow: hidden;
+  padding: clamp(16px, 2.6vw, 24px);
+}
+
+.dashboard-command::before {
+  content: '';
+  position: absolute;
+  inset: -35% auto auto -10%;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.13;
+  filter: blur(24px);
+}
+
+.command-copy,
+.dashboard-command > .premium-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.command-kicker,
+.panel-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.command-copy .section-title {
+  max-width: 650px;
+  margin: 0 0 8px;
+  font-size: clamp(28px, 3.2vw, 40px);
+  font-weight: 800;
+  line-height: 1.04;
+}
+
+.command-copy .body-text {
+  max-width: 720px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.trust-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius-pill);
+  padding: 8px 11px;
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dashboard-grid {
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 22px;
+}
+
+.sidebar-column {
+  position: sticky;
+  top: 118px;
+}
+
+.panel-heading {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.mission-panel,
+.filter-panel,
+.content-surface {
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
+.mini-action {
+  margin-top: 14px;
+  padding: 9px 14px;
+  font-size: 12px;
+}
+
+.job-sidebar-card {
+  position: relative;
+  overflow: hidden;
+  padding: 14px;
+}
+
+.job-sidebar-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.job-sidebar-card.active::before,
+.job-sidebar-card:hover::before {
+  opacity: 1;
+}
+
+.content-surface {
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.surface-title .card-title {
+  margin-top: 5px;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.provider-card {
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.28)),
+    var(--frost-bg);
+}
+
+.provider-card-main {
+  align-items: flex-start;
+}
+
+.provider-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
+}
+
+.rating-badge {
+  border-radius: var(--radius-pill);
+  padding: 7px 11px;
+}
+
+.map-canvas {
+  border-radius: 32px;
+}
+
+@media (max-width: 1060px) {
+  .dashboard-command {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar-column {
+    position: static;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .search-wrapper {
+    min-width: min(100%, 280px);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-command {
+    padding: 18px;
+  }
+
+  .provider-card-main {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .toolbar-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .view-toggle {
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    justify-content: center;
+  }
 }
 </style>

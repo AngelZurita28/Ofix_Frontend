@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { useStore } from '../store';
 import { 
   ArrowLeft, Send, Image, ShieldCheck, 
-  Phone, Star, Clock, CheckCircle2, CreditCard, Lock
+  Phone, Star, Clock, CheckCircle2, CreditCard, Lock, X
 } from 'lucide-vue-next';
 
 const { 
@@ -23,6 +23,50 @@ const showReviewModal = ref(false);
 // Review form states
 const reviewRating = ref(5);
 const reviewComment = ref('');
+
+const statusMeta = computed(() => {
+  if (!activeContract.value) {
+    return {
+      label: 'Sin contrato',
+      title: 'No hay un trato activo',
+      detail: 'Regresa al panel para iniciar una contratación.'
+    };
+  }
+
+  if (activeContract.value.status === 'pending_deposit') {
+    return {
+      label: 'Pendiente de garantía',
+      title: 'El trato espera el depósito Escrow',
+      detail: state.activeMode === 'DEMANDA'
+        ? 'Fondea la garantía para activar la visita y liberar los datos finales.'
+        : 'Espera el fondeo antes de salir. La dirección exacta sigue protegida.'
+    };
+  }
+
+  if (activeContract.value.status === 'funded') {
+    return {
+      label: 'Garantía fondeada',
+      title: 'El trabajo ya puede ejecutarse',
+      detail: 'Los fondos están resguardados y la información operativa se desbloqueó.'
+    };
+  }
+
+  return {
+    label: 'Trato completado',
+    title: 'La garantía fue liberada',
+    detail: 'El trabajo cerró y la reputación puede alimentar futuros tratos.'
+  };
+});
+
+const escrowSteps = computed(() => {
+  const status = activeContract.value?.status;
+  return [
+    { label: 'Acuerdo', done: Boolean(activeContract.value) },
+    { label: 'Escrow', done: status === 'funded' || status === 'completed' },
+    { label: 'Ejecución', done: status === 'funded' || status === 'completed' },
+    { label: 'Liberación', done: status === 'completed' }
+  ];
+});
 
 // Scroll helper
 const chatHistoryRef = ref<HTMLElement | null>(null);
@@ -107,19 +151,32 @@ const goBackToDashboard = () => {
 <template>
   <div class="chat-escrow-container">
     <!-- Header bar -->
-    <div class="chat-header glass-panel mb-6">
-      <button @click="goBackToDashboard" class="secondary-btn text-xs py-2 px-3 flex items-center gap-1">
-        <ArrowLeft :size="14" /> Volver al Tablón
+    <div class="deal-room-header glass-panel mb-6">
+      <button @click="goBackToDashboard" class="secondary-btn back-btn">
+        <ArrowLeft :size="14" /> Volver al tablero
       </button>
-      
-      <div v-if="activeContract" class="header-job-title text-left flex-1 pl-4">
-        <span class="badge badge-success text-xs mb-1 uppercase font-semibold">Trato de Confianza</span>
-        <h3 class="card-title text-xl">Contrato: {{ activeContract.providerName }} & {{ activeContract.clientName }}</h3>
+
+      <div class="deal-room-copy text-left">
+        <span class="deal-kicker">
+          <ShieldCheck :size="14" />
+          {{ statusMeta.label }}
+        </span>
+        <h3 class="card-title">{{ statusMeta.title }}</h3>
+        <p class="body-text">{{ statusMeta.detail }}</p>
       </div>
-      
-      <div v-if="activeContract" class="contract-amount font-bold text-orange text-lg">
-        ${{ activeContract.agreementAmount }} MXN
+
+      <div v-if="activeContract" class="deal-amount-card">
+        <span>Monto protegido</span>
+        <strong>${{ activeContract.agreementAmount }} MXN</strong>
+        <small>{{ activeContract.providerName }} & {{ activeContract.clientName }}</small>
       </div>
+
+      <ol class="escrow-progress" aria-label="Progreso del trato">
+        <li v-for="step in escrowSteps" :key="step.label" :class="{ done: step.done }">
+          <span></span>
+          <p>{{ step.label }}</p>
+        </li>
+      </ol>
     </div>
 
     <!-- Active view container -->
@@ -131,6 +188,13 @@ const goBackToDashboard = () => {
     <div v-else class="chat-grid">
       <!-- LEFT COLUMN: Messaging chat -->
       <div class="chat-column glass-panel">
+        <div class="chat-column-head">
+          <div>
+            <span class="deal-kicker">Coordinación</span>
+            <h3 class="card-title">Chat del trato</h3>
+          </div>
+          <span class="chat-pill">{{ activeContract.messages.length }} mensajes</span>
+        </div>
         <!-- Message list history -->
         <div ref="chatHistoryRef" class="chat-history mb-4">
           <div 
@@ -182,9 +246,13 @@ const goBackToDashboard = () => {
       <div class="escrow-column sidebar-column">
         <!-- Escrow Widget -->
         <div class="sidebar-section glass-panel text-left">
-          <h3 class="card-title mb-4 flex items-center gap-2">
-            <ShieldCheck :size="18" class="text-orange animate-pulse" /> Escrow de Garantía Ofix
-          </h3>
+          <div class="escrow-widget-head">
+            <ShieldCheck :size="20" class="text-orange" />
+            <div>
+              <span class="deal-kicker">Garantía Ofix</span>
+              <h3 class="card-title">Escrow y privacidad</h3>
+            </div>
+          </div>
 
           <!-- STATUS: PENDING DEPOSIT -->
           <div v-if="activeContract.status === 'pending_deposit'">
@@ -392,15 +460,130 @@ const goBackToDashboard = () => {
 
 <style scoped>
 .chat-escrow-container {
-  padding: 24px 20px;
+  padding: 22px 0 48px;
 }
 
-.chat-header {
-  display: flex;
-  justify-content: space-between;
+.deal-room-header {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(230px, 0.34fr);
+  gap: 18px;
   align-items: center;
-  gap: 20px;
-  padding: 16px 24px;
+  overflow: hidden;
+  padding: clamp(18px, 3vw, 28px);
+}
+
+.deal-room-header::before {
+  content: '';
+  position: absolute;
+  inset: -90px -80px auto auto;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.13;
+  filter: blur(18px);
+}
+
+.back-btn,
+.deal-room-copy,
+.deal-amount-card,
+.escrow-progress {
+  position: relative;
+  z-index: 1;
+}
+
+.back-btn {
+  padding: 10px 14px;
+  font-size: 12px;
+}
+
+.deal-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.deal-room-copy .card-title {
+  margin: 7px 0 5px;
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.deal-room-copy .body-text {
+  max-width: 620px;
+}
+
+.deal-amount-card {
+  padding: 16px;
+  border: 1px solid var(--frost-border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.deal-amount-card span,
+.deal-amount-card small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.deal-amount-card strong {
+  display: block;
+  margin: 5px 0;
+  color: var(--text-dark);
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.escrow-progress {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 4px 0 0;
+  list-style: none;
+}
+
+.escrow-progress li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.56);
+}
+
+.escrow-progress li span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: transparent;
+}
+
+.escrow-progress li.done span {
+  background: var(--accent);
+  box-shadow: 0 0 0 6px var(--accent-glow);
+}
+
+.escrow-progress li p {
+  color: var(--text-dark);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .text-orange { color: var(--sunset-orange); }
@@ -410,7 +593,7 @@ const goBackToDashboard = () => {
 
 .chat-grid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.38fr);
   gap: 24px;
   align-items: start;
 }
@@ -424,8 +607,31 @@ const goBackToDashboard = () => {
 .chat-column {
   display: flex;
   flex-direction: column;
-  height: 520px;
+  height: 620px;
   padding: 24px;
+}
+
+.chat-column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--frost-border);
+  margin-bottom: 16px;
+}
+
+.chat-column-head .card-title {
+  margin-top: 5px;
+}
+
+.chat-pill {
+  border-radius: var(--radius-pill);
+  padding: 8px 11px;
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.54);
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .chat-history {
@@ -452,8 +658,8 @@ const goBackToDashboard = () => {
 
 .message-bubble {
   max-width: 75%;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  border-radius: 24px;
   text-align: left;
 }
 
@@ -517,9 +723,27 @@ const goBackToDashboard = () => {
   padding: 24px;
 }
 
+.escrow-column {
+  position: sticky;
+  top: 118px;
+}
+
+.escrow-widget-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.escrow-widget-head .card-title {
+  margin-top: 5px;
+}
+
 .payment-card-mock {
   padding: 16px;
   border: 1px solid var(--frost-border);
+  border-radius: 24px;
   background-color: rgba(255,255,255,0.5);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
@@ -562,6 +786,7 @@ const goBackToDashboard = () => {
   border: 1px solid var(--frost-border);
   background-color: rgba(255, 255, 255, 0.6);
   padding: 16px;
+  border-radius: 24px;
 }
 
 .font-mono {
@@ -570,6 +795,7 @@ const goBackToDashboard = () => {
 
 .mini-route-map {
   height: 160px;
+  border-radius: 24px;
 }
 
 .route-line-dashed {
@@ -599,6 +825,35 @@ const goBackToDashboard = () => {
 .chat-closed-notice {
   padding: 12px;
   background-color: rgba(59, 96, 67, 0.05);
+}
+
+@media (max-width: 980px) {
+  .deal-room-header,
+  .chat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .escrow-column {
+    position: static;
+  }
+
+  .chat-column {
+    height: min(620px, 72vh);
+  }
+}
+
+@media (max-width: 640px) {
+  .escrow-progress {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .message-bubble {
+    max-width: 90%;
+  }
+
+  .chat-controls-bar {
+    align-items: stretch;
+  }
 }
 
 .star-rating-selector {
