@@ -66,7 +66,7 @@ body {
   background-color: var(--bg-arena);
 }
 
-/* Ambient Orbs in the background */
+/* Persistent mode light */
 .ambient-orbs {
   position: fixed;
   top: 0;
@@ -86,22 +86,98 @@ body {
   transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Orb 1: Primary active color */
-.orb-primary {
+.ambient-orbs.landing-light .orb-primary {
   width: 50vw;
   height: 50vw;
   top: -10vw;
   right: -10vw;
   background-color: var(--accent);
+  animation: landingModeDrift 18s ease-in-out infinite alternate;
 }
 
-/* Orb 2: Supporting soft tone */
-.orb-secondary {
+.ambient-orbs.landing-light .orb-secondary {
   width: 40vw;
   height: 40vw;
   bottom: -5vw;
   left: -5vw;
   background-color: var(--accent-light);
+  animation: landingSupportDrift 22s ease-in-out infinite alternate;
+}
+
+.ambient-orbs.function-light .orb {
+  filter: blur(72px);
+  opacity: 0.38;
+}
+
+.ambient-orbs.function-light .orb-primary {
+  width: min(880px, calc(100vw - 40px));
+  height: 132px;
+  top: 4px;
+  left: 50%;
+  background-color: var(--accent);
+  border-radius: var(--radius-pill);
+  transform: translateX(-50%);
+  animation: navbarModeGlow 12s ease-in-out infinite alternate;
+}
+
+.ambient-orbs.function-light .orb-secondary {
+  width: min(680px, calc(100vw - 80px));
+  height: 92px;
+  top: 46px;
+  left: 50%;
+  background-color: var(--accent-light);
+  border-radius: var(--radius-pill);
+  transform: translateX(-50%);
+  animation: navbarSupportGlow 14s ease-in-out infinite alternate;
+}
+
+@keyframes landingModeDrift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-8vw, 7vh, 0) scale(1.08);
+  }
+}
+
+@keyframes landingSupportDrift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(7vw, -6vh, 0) scale(1.12);
+  }
+}
+
+@keyframes navbarModeGlow {
+  from {
+    transform: translateX(-50%) scaleX(0.96);
+    opacity: 0.28;
+  }
+  to {
+    transform: translateX(-50%) scaleX(1.04);
+    opacity: 0.46;
+  }
+}
+
+@keyframes navbarSupportGlow {
+  from {
+    transform: translateX(-50%) scaleX(1.05);
+    opacity: 0.24;
+  }
+  to {
+    transform: translateX(-50%) scaleX(0.98);
+    opacity: 0.36;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-orbs.landing-light .orb-primary,
+  .ambient-orbs.landing-light .orb-secondary,
+  .ambient-orbs.function-light .orb-primary,
+  .ambient-orbs.function-light .orb-secondary {
+    animation: none;
+  }
 }
 
 /* Glass panel */

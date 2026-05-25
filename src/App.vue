@@ -10,18 +10,22 @@ const { state, toggleMode, logout, navigateTo } = useStore();
 </script>
 
 <template>
-  <div id="main-app">
-    <!-- Ambient glowing light orbs in the background -->
-    <div class="ambient-orbs">
+  <div
+    id="main-app"
+    :class="{ 'is-landing-view': state.currentView === 'welcome', 'is-function-view': state.currentView !== 'welcome' }"
+  >
+    <!-- Persistent mode light: full backdrop on landing, navbar halo in function views -->
+    <div :class="['ambient-orbs', state.currentView === 'welcome' ? 'landing-light' : 'function-light']">
       <div class="orb orb-primary"></div>
       <div class="orb orb-secondary"></div>
     </div>
 
     <!-- Master Header -->
     <header v-if="state.currentView !== 'welcome'" class="app-navbar glass-panel">
+      <div class="navbar-mode-light" aria-hidden="true"></div>
       <!-- Left side: Brand -->
       <div class="brand-logo" @click="navigateTo('welcome')">
-        <img src="/src/assets/ofix.png" alt="Ofix" class="brand-logo-img" />
+        <img src="/src/assets/ofix.svg" alt="Ofix" class="brand-logo-img" />
       </div>
 
       <!-- Center: Suspended Switch Pill (6.A of DESIGN.md) -->
@@ -104,6 +108,50 @@ const { state, toggleMode, logout, navigateTo } = useStore();
   padding: 12px 24px;
   border-radius: var(--radius-pill); /* Pill shaped navbar floating at top */
   margin-bottom: 24px;
+  position: relative;
+  overflow: visible;
+  z-index: 2;
+}
+
+.navbar-mode-light {
+  position: absolute;
+  inset: -18px -26px;
+  border-radius: var(--radius-pill);
+  background:
+    radial-gradient(ellipse at 50% 50%, var(--accent) 0, transparent 44%),
+    radial-gradient(ellipse at 50% 50%, var(--accent-light) 0, transparent 72%);
+  filter: blur(22px);
+  opacity: 0.42;
+  pointer-events: none;
+  z-index: -1;
+  animation: navbarHaloTravel 9s ease-in-out infinite alternate;
+}
+
+.navbar-mode-light::after {
+  content: '';
+  position: absolute;
+  inset: 12px 18px;
+  border-radius: inherit;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  box-shadow:
+    0 0 28px var(--accent-glow),
+    0 14px 52px color-mix(in srgb, var(--accent) 18%, transparent);
+  opacity: 0.8;
+}
+
+@keyframes navbarHaloTravel {
+  from {
+    transform: translate3d(0, 0, 0) scaleX(0.98);
+  }
+  to {
+    transform: translate3d(0, 2px, 0) scaleX(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-mode-light {
+    animation: none;
+  }
 }
 
 .brand-logo {
@@ -251,6 +299,10 @@ const { state, toggleMode, logout, navigateTo } = useStore();
     flex-direction: column;
     gap: 12px;
     border-radius: var(--radius-md);
+  }
+  .navbar-mode-light {
+    inset: -14px -12px;
+    border-radius: var(--radius-lg);
   }
   .user-display-name {
     display: none;

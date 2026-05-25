@@ -99,7 +99,7 @@ const selectRole = (role: 'DEMANDA' | 'OFERTA') => {
     <!-- Portada Header (Floating brand identity and inline login button) -->
     <div class="portada-header">
       <div class="brand-logo">
-        <img src="/src/assets/ofix.png" alt="Ofix" class="brand-logo-img" />
+        <img src="/src/assets/ofix.svg" alt="Ofix" class="brand-logo-img" />
       </div>
       <button @click="openAuthModal(false)" class="secondary-btn text-xs py-2 px-4">
         Iniciar Sesión
