@@ -1,4 +1,4 @@
-# Accessibility Audit - Ofix Frontend
+# Accessibility Audit - OfiixFrontend
 
 Date: 2026-05-24
 

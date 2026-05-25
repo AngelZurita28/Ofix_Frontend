@@ -1,7 +1,7 @@
 
-# Plan de Implementación: Prototipo Frontend Ofix (Terra)
+# Plan de Implementación: Prototipo Frontend Ofiix(Terra)
 
-Este plan detalla el desarrollo del prototipo frontend para **Ofix (Terra)** en Vue 3 con TypeScript. La aplicación será sumamente interactiva, permitiendo simular el flujo completo: desde registrarse, publicar un trabajo, ofertar como proveedor, pagar en garantía (Escrow) y chatear con geolocalización liberada.
+Este plan detalla el desarrollo del prototipo frontend para **Ofiix(Terra)** en Vue 3 con TypeScript. La aplicación será sumamente interactiva, permitiendo simular el flujo completo: desde registrarse, publicar un trabajo, ofertar como proveedor, pagar en garantía (Escrow) y chatear con geolocalización liberada.
 
 ## Estética y Diseño Premium (Glassmorphism & Terraria)
 

@@ -1,6 +1,6 @@
-# Checklist de Desarrollo - Ofix (Terra) Prototipe Frontend
+# Checklist de Desarrollo - Ofiix(Terra) Prototipe Frontend
 
-Este checklist registra el avance del prototipo interactivo para **Ofix (Terra)**, implementado en Vue 3 + TypeScript. Los estados son:
+Este checklist registra el avance del prototipo interactivo para **Ofiix(Terra)**, implementado en Vue 3 + TypeScript. Los estados son:
 - `[ ]` Pendiente
 - `[/]` En Desarrollo
 - `[x]` Completado

@@ -407,6 +407,8 @@ p.body-text {
   justify-content: center;
   z-index: 999;
   padding: 16px;
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 .modal-content {
@@ -414,6 +416,7 @@ p.body-text {
   max-width: 550px;
   max-height: 90vh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -528,7 +531,7 @@ p.body-text {
   opacity: 0;
 }
 
-/* Estilos de Controles Orgánicos Ofix (Premium UI/UX) */
+/* Estilos de Controles Orgánicos Ofiix(Premium UI/UX) */
 
 .form-label {
   font-family: var(--font-display);
@@ -649,7 +652,7 @@ input[type="range"]::-moz-range-thumb:hover {
   box-shadow: inset 0 2px 8px rgba(105, 95, 87, 0.02) !important;
 }
 
-/* Ofix Ecosistema - Clases Utilitarias */
+/* OfiixEcosistema - Clases Utilitarias */
 
 /* Accesibilidad y Colores de Texto */
 .text-orange {

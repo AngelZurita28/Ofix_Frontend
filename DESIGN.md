@@ -1,4 +1,4 @@
-# Sistema de Diseño: Ofix (Conexión Local)
+# Sistema de Diseño: Ofiix(Conexión Local)
 
 Este sistema de diseño nace de una estética orgánica, táctil e inspirada en la naturaleza mexicana. Combina la textura etérea del vidrio esmerilado (_glassmorphism_) con materiales terrenales: arena, rocas de río pulidas, la calidez de la arcilla al atardecer y la vitalidad de la vegetación viva ("Terraria Elements"). Es una interfaz profesional, limpia y sumamente cercana.
 

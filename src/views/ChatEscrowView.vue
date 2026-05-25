@@ -258,7 +258,7 @@ const goBackToDashboard = () => {
           <div v-if="activeContract.status === 'pending_deposit'">
             <!-- Client view of pending payment -->
             <div v-if="state.activeMode === 'DEMANDA'" class="client-payment-flow">
-              <p class="body-text text-sm mb-4">Deposita de manera ultra-segura el fondo acordado. Ofix resguardará el dinero y solo lo entregará al técnico una vez que confirmes que el servicio fue entregado.</p>
+              <p class="body-text text-sm mb-4">Deposita de manera ultra-segura el fondo acordado. Ofiixresguardará el dinero y solo lo entregará al técnico una vez que confirmes que el servicio fue entregado.</p>
               
               <div class="glass-panel-sm payment-card-mock mb-4">
                 <div class="flex justify-between items-center mb-3">

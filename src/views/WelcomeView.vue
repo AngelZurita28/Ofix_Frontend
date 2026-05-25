@@ -7,7 +7,6 @@ import {
   CircleDollarSign,
   ClipboardList,
   Clock,
-  EyeOff,
   HeartHandshake,
   Lock,
   Mail,
@@ -20,7 +19,6 @@ import {
   Send,
   ShieldCheck,
   Sparkles,
-  Star,
   Store,
   User,
   Wrench,
@@ -49,155 +47,155 @@ const errors = ref({
 
 const modeCopy = {
   DEMANDA: {
-    badge: 'Modo Necesito',
-    eyebrow: 'Publica una necesidad, recibe postulaciones locales',
-    title: 'Cuando algo urge en casa, Ofix convierte tu necesidad en un trabajo claro.',
-    highlight: 'Tablon de tareas',
-    question: '¿Que necesitas resolver hoy?',
+    badge: 'Contratar a profesionales',
+    eyebrow: 'Para usuarios que necesitan resolver un trabajo',
+    title: 'Encuentra profesionales o publica una tarea para que ellos se postulen.',
+    highlight: 'Dos formas de contratar',
+    question: '¿Necesitas que alguien realice un trabajo?',
     promise:
-      'El usuario no empieza buscando perfiles. Empieza contando un problema concreto y Ofix lo convierte en una solicitud estructurada para que otros puedan postularse.',
-    surfaceTitle: 'La pantalla se comporta como un tablon vivo',
+      'Este módulo es para quien tiene una necesidad concreta: reparar tuberías, instalar algo, atender una urgencia o contratar un servicio. Puedes buscar perfiles primero o solicitar una tarea directamente.',
+    surfaceTitle: 'Directorio de profesionales + solicitud de tarea',
     surfaceText:
-      'Ordena tareas por urgencia, presupuesto, categoria y cercania aproximada. La informacion importante es la necesidad, no el vendedor.',
-    primaryObject: 'Tarea publicada',
-    examples: ['Fuga en cocina', 'Instalar minisplit', 'Maquillaje para evento', 'Reparar porton'],
+      'La pantalla combina perfiles, filtros y mapa para encontrar profesionales cercanos. Si prefieres publicar la necesidad, los proveedores se postulan con una propuesta y su precio.',
+    primaryObject: 'Necesidad del usuario',
+    examples: ['Necesito revisar tuberías', 'Busco electricista cerca', 'Solicitar tarea urgente', 'Comparar perfiles verificados'],
     modules: [
       {
-        label: 'Entrada',
-        title: 'Formulario narrativo',
-        text: 'Captura problema, fotos, presupuesto estimado, horario y urgencia sin pedir la direccion exacta desde el inicio.'
+        label: 'Camino 1',
+        title: 'Buscar profesionales',
+        text: 'Explora perfiles, reputación, categoría, disponibilidad y ubicación. Algunos proveedores muestran local exacto; otros solo zona aproximada.'
       },
       {
-        label: 'Vista',
-        title: 'Postulaciones comparables',
-        text: 'Cada proveedor responde con llegada estimada, precio, propuesta tecnica y señales de reputacion.'
+        label: 'Camino 2',
+        title: 'Solicitar tarea',
+        text: 'Publica qué necesitas, cuánto ofreces y dónde se requiere el servicio para que profesionales cercanos puedan postularse.'
       },
       {
-        label: 'Decision',
-        title: 'Aceptar antes de revelar',
-        text: 'La direccion fina se desbloquea despues del acuerdo, con el pago en garantia listo para activar la visita.'
+        label: 'Decisión',
+        title: 'Comparar postulaciones',
+        text: 'El profesional explica por qué puede resolverlo y propone un cobro. Tú decides según perfil, propuesta y precio.'
       }
     ],
     description:
-      'Crea una tarea con presupuesto, urgencia y zona aproximada. Los proveedores cercanos se postulan y solo revelas tu direccion exacta cuando ya existe un trato aceptado.',
-    cta: 'Publicar mi necesidad',
-    secondary: 'Ver como se protege mi ubicacion',
-    previewTitle: 'Fuga debajo de tarja',
-    previewLabel: 'Tarea publicada',
-    previewMeta: 'Zona Centro, Monclova',
-    previewPrice: '$650 MXN',
-    previewStatus: '3 postulantes',
-    locationPublic: 'Zona Centro, Monclova',
-    locationPrivate: 'Direccion exacta bloqueada',
-    boardTitle: 'Postulaciones entrantes',
+      'Primero puedes descubrir profesionales cercanos y revisar su perfil. Si ya sabes qué necesitas, publica una tarea con presupuesto y ubicación; los profesionales interesados se postulan con propuesta y cotización.',
+    cta: 'Solicitar tarea',
+    secondary: 'Buscar profesionales',
+    previewTitle: 'Revisión de tuberías en casa',
+    previewLabel: 'Solicitud de tarea',
+    previewMeta: 'Usuario ofrece $500/hr - Zona Centro',
+    previewPrice: 'Oferta: $500/hr',
+    previewStatus: '3 propuestas',
+    locationPublic: 'Zona aproximada o local visible',
+    locationPrivate: 'Dirección exacta tras acuerdo',
+    boardTitle: 'Profesionales postulados',
     boardItems: [
-      'Mateo G. puede llegar en 25 min',
-      'Valeria S. confirma refacciones',
-      'Alejandro R. sugiere visita manana'
+      'Mateo G. propone $600/hr y llegada en 25 min',
+      'Valeria S. acepta $500/hr si incluye refacciones',
+      'Alejandro R. explica experiencia en tuberías'
     ],
     metrics: [
-      { value: '1.5 km', label: 'radio visible' },
-      { value: '3 pasos', label: 'para publicar' },
-      { value: 'Escrow', label: 'pago resguardado' }
+      { value: '2 rutas', label: 'buscar o publicar' },
+      { value: 'Mapa', label: 'profesionales cercanos' },
+      { value: 'Escrow', label: 'pago retenido' }
     ],
     flow: [
       {
-        icon: ClipboardList,
-        title: 'Describe la tarea',
-        text: 'Problema, fotos, presupuesto estimado y nivel de urgencia.'
-      },
-      {
         icon: Search,
-        title: 'Compara postulantes',
-        text: 'Recibe propuestas de talento cercano con reputacion y tiempos.'
+        title: 'Explora perfiles',
+        text: 'Busca profesionales por categoría, cercanía, reputación, precio y disponibilidad.'
       },
       {
-        icon: EyeOff,
-        title: 'Privacidad por fases',
-        text: 'Primero se muestra la zona. La direccion exacta se libera al aceptar.'
+        icon: ClipboardList,
+        title: 'Solicita una tarea',
+        text: 'Publica qué necesitas, cuánto ofreces y la ubicación donde se realizará el trabajo.'
+      },
+      {
+        icon: HeartHandshake,
+        title: 'Acepta una propuesta',
+        text: 'Compara perfil, explicación técnica y precio antes de concretar el trato protegido.'
       }
     ],
     rail: [
-      'Publicacion con presupuesto',
-      'Postulacion de proveedores',
-      'Aceptacion y deposito Escrow',
-      'Direccion exacta desbloqueada'
+      'Buscar perfiles o solicitar tarea',
+      'Profesionales postulan con propuesta y precio',
+      'Solicitante elige y paga por Escrow',
+      'Chat y ubicación exacta se liberan tras acuerdo'
     ]
   },
   OFERTA: {
-    badge: 'Modo Ofrezco',
-    eyebrow: 'Explora talento, perfiles y negocios mexicanos',
-    title: 'Cuando buscas calidad, Ofix te deja explorar quien sabe resolverlo.',
-    highlight: 'Directorio de perfiles',
-    question: '¿Quien puede hacerlo mejor?',
+    badge: 'Ofrecer Servicio',
+    eyebrow: 'Para profesionales que quieren encontrar trabajos cercanos',
+    title: 'Configura tu perfil, encuentra tareas publicadas y postúlate con una propuesta.',
+    highlight: 'Tablón de oportunidades',
+    question: '¿Quieres conseguir trabajos cerca de ti?',
     promise:
-      'El usuario no publica primero. Explora talento local, compara perfiles y contacta directamente a quien ya demuestra experiencia.',
-    surfaceTitle: 'La pantalla se comporta como un catalogo de talento',
+      'Este módulo es para proveedores de servicios. Entras como profesional, muestras quién eres y ves tareas publicadas por usuarios que necesitan ayuda.',
+    surfaceTitle: 'Perfil profesional + tablero de tareas',
     surfaceText:
-      'Prioriza categorias, portafolios, reseñas, disponibilidad y precios. La informacion importante es la capacidad comprobable del proveedor.',
-    primaryObject: 'Perfil de proveedor',
-    examples: ['Plomeria', 'Construccion', 'Maquillaje', 'Clases particulares'],
+      'La pantalla se centra en trabajos disponibles: qué pide el usuario, cuánto ofrece, zona aproximada y cómo puedes postularte con tu explicación y cotización.',
+    primaryObject: 'Propuesta del profesional',
+    examples: ['Configurar perfil', 'Ver tareas cercanas', 'Enviar cotización', 'Cobrar al terminar'],
     modules: [
       {
-        label: 'Entrada',
-        title: 'Busqueda por categoria',
-        text: 'Permite explorar oficios, servicios fisicos o virtuales, negocios pequeños y talento independiente por zona.'
+        label: 'Perfil',
+        title: 'Presenta tu servicio',
+        text: 'Configura categoría, descripción, tarifa, evidencia, reputación y datos que ayuden al solicitante a confiar en ti.'
       },
       {
-        label: 'Vista',
-        title: 'Perfiles con evidencia',
-        text: 'Muestra galeria, reseñas, trabajos completados, precio base, tiempo de respuesta e insignias de confianza.'
+        label: 'Tablón',
+        title: 'Encuentra tareas cercanas',
+        text: 'Revisa solicitudes publicadas por usuarios. El mapa muestra zonas aproximadas para saber qué trabajos están cerca.'
       },
       {
-        label: 'Decision',
-        title: 'Oferta directa contextual',
-        text: 'El cliente inicia contacto explicando necesidad, fecha y presupuesto para convertir el perfil en una contratacion.'
+        label: 'Postulación',
+        title: 'Propón cómo lo resolverías',
+        text: 'Explica por qué eres adecuado, acepta el precio ofrecido o haz una contraoferta. El usuario decide si te contrata.'
       }
     ],
     description:
-      'Navega por categorias, revisa portafolios, reputacion y disponibilidad. Contacta directo a un proveedor o pequeno negocio con una solicitud precisa de trabajo.',
-    cta: 'Explorar talento local',
-    secondary: 'Ver categorias disponibles',
-    previewTitle: 'Mateo Gonzalez',
-    previewLabel: 'Perfil verificado',
-    previewMeta: 'Fontaneria - responde en 10 min',
-    previewPrice: '$220 / hora',
-    previewStatus: '4.9 estrellas',
-    locationPublic: 'Disponible en tu zona',
-    locationPrivate: 'Agenda y detalles por confirmar',
-    boardTitle: 'Perfil destacado',
+      'Como profesional ves tareas activas, filtras por categoría, presupuesto y distancia, y te postulas con una propuesta concreta. La ubicación exacta y el chat se liberan cuando el usuario acepta y paga por Escrow.',
+    cta: 'Ofrecer mi servicio',
+    secondary: 'Ver tareas cercanas',
+    previewTitle: 'Tarea: reparación de tuberías',
+    previewLabel: 'Oportunidad cercana',
+    previewMeta: 'Zona aproximada - usuario ofrece $500/hr',
+    previewPrice: 'Tu oferta: $600/hr',
+    previewStatus: 'Pendiente de aceptación',
+    locationPublic: 'Zona aproximada del trabajo',
+    locationPrivate: 'Dirección exacta tras pago',
+    boardTitle: 'Tu postulación',
     boardItems: [
-      '84 trabajos completados',
-      'Portafolio con reparaciones reales',
-      'Insignias: Puntual, Identidad verificada'
+      'Explicas experiencia en tuberías del hogar',
+      'Propones $600/hr por herramientas y traslado',
+      'Esperas aceptación y depósito Escrow'
     ],
     metrics: [
-      { value: '12+', label: 'categorias' },
-      { value: '10 min', label: 'respuesta media' },
-      { value: '4.9', label: 'reputacion visible' }
+      { value: 'Perfil', label: 'profesional visible' },
+      { value: 'Mapa', label: 'tareas cercanas' },
+      { value: 'Escrow', label: 'cobro protegido' }
     ],
     flow: [
       {
         icon: Store,
-        title: 'Explora por categoria',
-        text: 'Construccion, plomeria, maquillaje, clases, reparaciones y mas.'
+        title: 'Configura tu perfil',
+        text: 'Muestra servicio, categoría, tarifa, experiencia, portafolio y reputación.'
       },
       {
-        icon: Star,
-        title: 'Evalua perfiles',
-        text: 'Fotos, reseñas, experiencia, precio y disponibilidad antes de contactar.'
+        icon: MapPinned,
+        title: 'Encuentra tareas cerca',
+        text: 'Consulta solicitudes en el mapa con ubicación aproximada y presupuesto visible.'
       },
       {
         icon: Send,
-        title: 'Lanza oferta directa',
-        text: 'Explica que necesitas, fecha, presupuesto y condiciones de visita.'
+        title: 'Envía tu propuesta',
+        text: 'Explica cómo lo resolverías y define si aceptas el precio o haces contraoferta.'
       }
     ],
     rail: [
-      'Busqueda por categoria',
-      'Perfil, portafolio y reseñas',
-      'Solicitud directa al proveedor',
-      'Escrow antes de revelar detalles finales'
+      'Profesional configura su perfil',
+      'Revisa tareas publicadas cerca',
+      'Postula con explicación y precio',
+      'Dirección, chat y pago se activan con Escrow'
     ]
   }
 } as const;
@@ -322,12 +320,13 @@ const selectRole = (role: LandingMode) => {
         </div>
 
         <h1 class="hero-title">
-          Una sola plataforma para pedir ayuda o descubrir talento local.
+          Contrata profesionales o encuentra trabajos cerca de ti.
         </h1>
 
         <p class="hero-lede">
-          Ofix conecta consumidores con proveedores y pequeños negocios cercanos mediante un switch dual:
-          <strong>Necesito</strong> para publicar tareas y <strong>Ofrezco</strong> para explorar perfiles.
+          Ofiixconecta a quien necesita resolver una tarea con profesionales locales. El solicitante puede
+          buscar perfiles o publicar una tarea; el profesional puede encontrar trabajos, postularse y cobrar
+          con una garantía Escrow.
         </p>
 
         <div class="hero-actions">
@@ -343,17 +342,17 @@ const selectRole = (role: LandingMode) => {
       <div class="hero-orbit" aria-hidden="true">
         <div class="orbit-card orbit-card-demand">
           <ClipboardList :size="18" />
-          <span>Necesito</span>
-          <strong>Publicar tarea</strong>
+          <span>Contratar</span>
+          <strong>Buscar o solicitar tarea</strong>
         </div>
         <div class="hero-device glass-panel">
           <div class="device-topline">
             <span class="status-dot"></span>
-            <span>Ofix switch activo</span>
+            <span>Ofiixswitch activo</span>
           </div>
           <div class="device-switch">
-            <span :class="{ active: isDemandMode }">Necesito</span>
-            <span :class="{ active: !isDemandMode }">Ofrezco</span>
+            <span :class="{ active: isDemandMode }">Contratar</span>
+            <span :class="{ active: !isDemandMode }">Ofrecer</span>
             <div :class="['device-slider', state.activeMode.toLowerCase()]"></div>
           </div>
           <div class="device-map">
@@ -370,8 +369,8 @@ const selectRole = (role: LandingMode) => {
         </div>
         <div class="orbit-card orbit-card-offer">
           <Store :size="18" />
-          <span>Ofrezco</span>
-          <strong>Explorar perfiles</strong>
+          <span>Ofrecer</span>
+          <strong>Postularse a trabajos</strong>
         </div>
       </div>
     </section>
@@ -392,8 +391,8 @@ const selectRole = (role: LandingMode) => {
           @click="switchMode('DEMANDA')"
         >
           <ClipboardList :size="18" />
-          <span>Necesito</span>
-          <small>Publicar trabajo</small>
+          <span>Contratar</span>
+          <small>Buscar o solicitar</small>
         </button>
         <button
           type="button"
@@ -403,8 +402,8 @@ const selectRole = (role: LandingMode) => {
           @click="switchMode('OFERTA')"
         >
           <Store :size="18" />
-          <span>Ofrezco</span>
-          <small>Ver perfiles</small>
+          <span>Ofrecer</span>
+          <small>Postularse</small>
         </button>
       </div>
     </section>
@@ -454,8 +453,8 @@ const selectRole = (role: LandingMode) => {
           <span class="mode-eyebrow">{{ currentMode.eyebrow }}</span>
           <h2 class="mode-title">{{ currentMode.title }}</h2>
           <p class="body-text">
-            La diferencia no es cosmetica: cambia el objeto principal de la pantalla.
-            En un modo ves trabajos publicados; en el otro ves perfiles y catalogos.
+            En contratación, el usuario busca profesionales o publica una tarea para recibir propuestas.
+            En oferta, el profesional ve tareas cercanas y se postula con explicación y precio.
           </p>
 
           <div class="mode-actions">
@@ -550,9 +549,10 @@ const selectRole = (role: LandingMode) => {
       <div class="timeline-panel glass-panel">
         <div class="timeline-copy">
           <span class="mode-eyebrow">Lo que ve el usuario</span>
-          <h3>{{ isDemandMode ? 'Tablon de tareas por resolver' : 'Catalogo vivo de talento local' }}</h3>
+          <h3>{{ isDemandMode ? 'Profesionales y solicitudes de tarea' : 'Tareas cercanas para postularse' }}</h3>
           <p class="body-text">
-            Cada paso mantiene confianza, rapidez y cercania geografica sin exponer datos sensibles antes de tiempo.
+            El solicitante paga por Escrow, el dinero queda retenido, se liberan chat y ubicación cuando hay acuerdo,
+            y el profesional cobra cuando el trabajo se confirma como realizado.
           </p>
         </div>
         <ol class="timeline-list">
@@ -574,7 +574,7 @@ const selectRole = (role: LandingMode) => {
           <h2 class="section-title">Escrow crea confianza antes de que alguien toque la puerta.</h2>
           <p class="body-text">
             El pago se resguarda, la ubicacion exacta se protege por fases y la conversacion queda conectada
-            al trabajo acordado. Asi Ofix se siente cercano sin sacrificar seguridad.
+            al trabajo acordado. Asi Ofiixse siente cercano sin sacrificar seguridad.
           </p>
         </div>
       </div>

@@ -154,7 +154,7 @@ const selectJob = (id: number) => {
         <h2 class="section-title">Contrata con contexto, privacidad y garantía.</h2>
         <p class="body-text">
           Publica una necesidad para recibir postulaciones o explora perfiles cuando ya sabes qué oficio necesitas.
-          Ofix mantiene la zona aproximada visible y reserva la dirección exacta para el trato aceptado.
+          Ofiixmantiene la zona aproximada visible y reserva la dirección exacta para el trato aceptado.
         </p>
       </div>
       <button @click="state.isPublishingModalOpen = true" class="premium-btn">
@@ -468,172 +468,247 @@ const selectJob = (id: number) => {
 
     <!-- PUBLISHING JOB MODAL (2.2) -->
     <div v-if="state.isPublishingModalOpen" class="modal-overlay">
-      <div class="modal-content glass-panel text-left">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="card-title text-xl flex items-center gap-2">
-            🛠️ Publicar Nueva Tarea
-          </h3>
-          <button @click="state.isPublishingModalOpen = false" class="close-btn-round">
-            <X :size="18" />
-          </button>
+      <div class="modal-content glass-panel text-left task-request-modal">
+        <button @click="state.isPublishingModalOpen = false" class="close-btn-round task-close-btn">
+          <X :size="18" />
+        </button>
+
+        <div class="task-request-hero">
+          <span class="task-kicker">Solicitar tarea</span>
+          <h3 class="card-title" style="padding-bottom: 40px;">Publica lo que necesitas y deja que profesionales cercanos se postulen.</h3>
+          <div class="task-hero-steps">
+            <span>1. Describe</span>
+            <span>2. Define presupuesto</span>
+            <span>3. Protege ubicación</span>
+          </div>
         </div>
 
-        <form @submit.prevent="handlePublishJob" class="publish-form">
-          <div class="form-group mb-4">
-            <label class="form-label">¿Qué necesitas resolver? (Título)</label>
-            <div class="pill-input">
-              <input 
-                v-model="jobTitle" 
-                type="text" 
-                placeholder="Fuga de agua en lavabo, instalación de lámparas..." 
-                required 
-                maxlength="150"
-              />
+        <form @submit.prevent="handlePublishJob" class="publish-form task-request-form">
+          <section class="task-form-section">
+            <div class="task-section-heading">
+              <span>01</span>
+              <div>
+                <h4 class="card-title">Trabajo solicitado</h4>
+                <p class="body-text text-xs">Especifica qué problema necesitas resolver.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="form-group mb-4">
-            <label class="form-label">Categoría del oficio</label>
-            <div class="pill-input">
-              <select v-model="jobCategory">
-                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group mb-4">
-            <label class="form-label">Descripción detallada</label>
-            <div class="pill-input text-area-input">
-              <textarea 
-                v-model="jobDesc" 
-                placeholder="Describe a detalle el problema. Ej: El lavabo de la cocina gotea de la manguera derecha. Requiere cambio de conector metálico." 
-                rows="4"
-                required
-              ></textarea>
-            </div>
-          </div>
-
-          <div class="grid-2 mb-4">
-            <div class="form-group">
-              <label class="form-label">Presupuesto estimado (MXN)</label>
+            <div class="form-group mb-4">
+              <label class="form-label">¿Qué necesitas resolver?</label>
               <div class="pill-input">
                 <input 
-                  v-model.number="jobBudget" 
-                  type="number" 
-                  placeholder="Ej: 500"
+                  v-model="jobTitle" 
+                  type="text" 
+                  placeholder="Fuga de agua en lavabo, instalación de lámparas..." 
+                  required 
+                  maxlength="150"
                 />
               </div>
             </div>
-            <div class="form-group flex items-center justify-start pt-6 pl-4">
-              <label class="flex items-center gap-2 cursor-pointer font-medium text-sm">
-                <input type="checkbox" v-model="jobUrgent" class="checkbox-custom" />
-                🚨 ¡Es una urgencia inmediata!
-              </label>
-            </div>
-          </div>
 
-          <h4 class="card-title text-sm border-t pt-4 mb-2 text-muted">Geolocalización y Privacidad</h4>
-          
-          <div class="form-group mb-4">
-            <label class="form-label">Dirección Exacta (Privado, solo se libera al pagar)</label>
-            <div class="pill-input">
-              <MapPin :size="16" class="input-icon" />
-              <input 
-                v-model="jobExactAddr" 
-                type="text" 
-                placeholder="Calle Lerma 142, Dpto 402, Cuauhtémoc" 
-                required
-              />
+            <div class="form-group">
+              <label class="form-label">Descripción detallada</label>
+              <div class="pill-input text-area-input">
+                <textarea 
+                  v-model="jobDesc" 
+                  placeholder="Describe a detalle el problema. Ej: El lavabo de la cocina gotea de la manguera derecha. Requiere cambio de conector metálico." 
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div class="form-group mb-6">
-            <label class="form-label">Zona / Referencia (Público en el mapa)</label>
-            <div class="pill-input">
-              <MapPin :size="16" class="input-icon" />
-              <input 
-                v-model="jobApproxAddr" 
-                type="text" 
-                placeholder="Cerca del Ángel de la Independencia, Cuauhtémoc" 
-                required
-              />
+          <section class="task-form-section">
+            <div class="task-section-heading">
+              <span>02</span>
+              <div>
+                <h4 class="card-title">Categoría y presupuesto</h4>
+                <p class="body-text text-xs">Ayuda a que se postulen los profesionales correctos.</p>
+              </div>
             </div>
-          </div>
 
-          <button type="submit" class="premium-btn w-full">
-            <span>Publicar en Tablón de Ofertas</span>
-            <span class="icon-circle">
-              <ArrowRight :size="18" />
-            </span>
-          </button>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Categoría del oficio</label>
+                <div class="pill-input">
+                  <select v-model="jobCategory">
+                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Presupuesto ofrecido (MXN)</label>
+                <div class="pill-input">
+                  <input 
+                    v-model.number="jobBudget" 
+                    type="number" 
+                    placeholder="Ej: 500"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <label class="task-urgent-toggle">
+              <input type="checkbox" v-model="jobUrgent" class="checkbox-custom" />
+              <span>
+                <strong>Marcar como urgencia inmediata</strong>
+                <small>Se resaltará para profesionales disponibles cerca de ti.</small>
+              </span>
+            </label>
+          </section>
+
+          <section class="task-form-section privacy-task-section">
+            <div class="task-section-heading">
+              <span>03</span>
+              <div>
+                <h4 class="card-title">Ubicación y privacidad</h4>
+                <p class="body-text text-xs">La zona ayuda a postularse; la dirección exacta se reserva para el acuerdo.</p>
+              </div>
+            </div>
+
+            <div class="form-group mb-4">
+              <label class="form-label">Dirección exacta</label>
+              <div class="pill-input">
+                <MapPin :size="16" class="input-icon" />
+                <input 
+                  v-model="jobExactAddr" 
+                  type="text" 
+                  placeholder="Calle Lerma 142, Dpto 402, Cuauhtémoc" 
+                  required
+                />
+              </div>
+              <p class="field-helper">Privada. Se libera cuando aceptas una propuesta y se concreta el pago Escrow.</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Zona o referencia pública</label>
+              <div class="pill-input">
+                <MapPin :size="16" class="input-icon" />
+                <input 
+                  v-model="jobApproxAddr" 
+                  type="text" 
+                  placeholder="Cerca del Ángel de la Independencia, Cuauhtémoc" 
+                  required
+                />
+              </div>
+              <p class="field-helper">Visible para que profesionales calculen distancia y disponibilidad.</p>
+            </div>
+          </section>
+
+          <div class="task-request-footer">
+            <p class="body-text text-xs">Los profesionales podrán responder con explicación técnica, tiempo estimado y precio.</p>
+            <button type="submit" class="premium-btn">
+              <span>Publicar tarea</span>
+              <span class="icon-circle">
+                <ArrowRight :size="18" />
+              </span>
+            </button>
+          </div>
         </form>
       </div>
     </div>
 
     <!-- PROVIDER PUBLIC PROFILE MODAL (2.3) -->
     <div v-if="state.selectedProviderId && selectedProvider" class="modal-overlay">
-      <div class="modal-content glass-panel profile-modal text-left">
-        <button @click="state.selectedProviderId = null" class="close-btn-round">
+      <div class="modal-content glass-panel profile-modal text-left provider-profile-modal">
+        <button @click="state.selectedProviderId = null" class="close-btn-round provider-profile-close">
           <X :size="18" />
         </button>
 
-        <div class="profile-header flex gap-4 items-center mb-6">
-          <img :src="selectedProvider.profileImg" class="profile-modal-avatar" />
-          <div class="profile-header-text">
-            <span class="badge badge-success mb-1">{{ selectedProvider.category }}</span>
-            <h3 class="card-title text-2xl flex items-center gap-2">
+        <div class="provider-profile-hero">
+          <img :src="selectedProvider.profileImg" class="profile-modal-avatar" :alt="selectedProvider.name" />
+          <div class="provider-profile-copy">
+            <span class="provider-profile-kicker">{{ selectedProvider.category }}</span>
+            <h3 class="card-title">
               {{ selectedProvider.name }}
               <span class="online-dot" v-if="selectedProvider.status === 'online'"></span>
             </h3>
-            <div class="flex gap-4 text-xs text-muted mt-1">
-              <span class="flex items-center"><Star :size="12" class="icon-star mr-1" /> {{ selectedProvider.rating }} ({{ selectedProvider.reviews.length }} reseñas)</span>
-              <span>Trabajos: <strong>{{ selectedProvider.completedJobs }}</strong></span>
+            <p class="body-text">
+              Profesional local disponible para solicitudes directas y tareas publicadas. Revisa su experiencia,
+              trabajos anteriores y reseñas antes de iniciar un trato protegido.
+            </p>
+            <div class="provider-profile-stats">
+              <span><Star :size="13" class="icon-star" /> {{ selectedProvider.rating }} de calificación</span>
+              <span>{{ selectedProvider.completedJobs }} trabajos completados</span>
+              <span>Responde en {{ selectedProvider.responseTime }}</span>
             </div>
           </div>
         </div>
 
-        <h4 class="card-title text-sm uppercase text-muted mb-2">Sobre mí</h4>
-        <p class="body-text mb-6">{{ selectedProvider.bio }}</p>
-
-        <h4 class="card-title text-sm uppercase text-muted mb-3">Portafolio de trabajos anteriores</h4>
-        <!-- Portfolio Carousel -->
-        <div class="portfolio-carousel mb-6">
-          <img 
-            v-for="(img, idx) in selectedProvider.portfolio" 
-            :key="idx"
-            :src="img" 
-            class="portfolio-img"
-            alt="Trabajo de portafolio"
-          />
-        </div>
-
-        <h4 class="card-title text-sm uppercase text-muted mb-3">Reseñas de la comunidad</h4>
-        <div class="reviews-list mb-8">
-          <div 
-            v-for="rev in selectedProvider.reviews" 
-            :key="rev.id"
-            class="glass-panel-sm review-item text-left mb-3"
-          >
-            <div class="flex justify-between items-center mb-2">
-              <span class="font-semibold text-sm">{{ rev.reviewer }}</span>
-              <span class="text-xs text-muted">{{ rev.date }}</span>
+        <div class="provider-profile-body">
+          <section class="provider-profile-section bio-section">
+            <div class="provider-section-heading">
+              <span>01</span>
+              <div>
+                <h4 class="card-title">Sobre su servicio</h4>
+                <p class="body-text text-xs">Especialidad, experiencia y forma de trabajo.</p>
+              </div>
             </div>
-            <div class="flex items-center gap-1 mb-1">
-              <Star 
-                v-for="star in 5" 
-                :key="star" 
-                :size="10" 
-                :class="star <= rev.rating ? 'icon-star' : 'icon-star-empty'" 
+            <p class="body-text provider-bio">{{ selectedProvider.bio }}</p>
+            <div class="badges-row provider-badge-row">
+              <span v-for="badge in selectedProvider.badges" :key="badge" class="badge badge-success text-xs">
+                {{ badge }}
+              </span>
+              <span class="badge badge-warning text-xs">${{ selectedProvider.pricePerHour }} MXN / hr</span>
+            </div>
+          </section>
+
+          <section class="provider-profile-section">
+            <div class="provider-section-heading">
+              <span>02</span>
+              <div>
+                <h4 class="card-title">Portafolio</h4>
+                <p class="body-text text-xs">Evidencia visual de trabajos anteriores.</p>
+              </div>
+            </div>
+            <div class="portfolio-carousel">
+              <img 
+                v-for="(img, idx) in selectedProvider.portfolio" 
+                :key="idx"
+                :src="img" 
+                class="portfolio-img"
+                alt="Trabajo de portafolio"
               />
             </div>
-            <p class="body-text text-xs italic">"{{ rev.comment }}"</p>
-          </div>
+          </section>
+
+          <section class="provider-profile-section">
+            <div class="provider-section-heading">
+              <span>03</span>
+              <div>
+                <h4 class="card-title">Reseñas de la comunidad</h4>
+                <p class="body-text text-xs">Comentarios que ayudan a decidir con confianza.</p>
+              </div>
+            </div>
+            <div class="reviews-list">
+              <div 
+                v-for="rev in selectedProvider.reviews" 
+                :key="rev.id"
+                class="glass-panel-sm review-item text-left"
+              >
+                <div class="review-head">
+                  <span class="font-semibold text-sm">{{ rev.reviewer }}</span>
+                  <span class="text-xs text-muted">{{ rev.date }}</span>
+                </div>
+                <div class="flex items-center gap-1 mb-1">
+                  <Star 
+                    v-for="star in 5" 
+                    :key="star" 
+                    :size="10" 
+                    :class="star <= rev.rating ? 'icon-star' : 'icon-star-empty'" 
+                  />
+                </div>
+                <p class="body-text text-xs italic">"{{ rev.comment }}"</p>
+              </div>
+            </div>
+          </section>
         </div>
 
         <!-- Hiring CTA Bar -->
-        <div class="hiring-bar flex justify-between items-center border-t pt-6">
+        <div class="hiring-bar provider-hiring-bar">
           <div>
-            <span class="text-xs text-muted block">Tarifa Promedio</span>
+            <span class="text-xs text-muted block">Tarifa promedio</span>
             <span class="font-bold text-lg text-orange">${{ selectedProvider.pricePerHour }} MXN / hr</span>
           </div>
           <button @click="isDirectHireOpen = true" class="premium-btn">
@@ -1056,44 +1131,208 @@ const selectJob = (id: number) => {
   }
 }
 
-.profile-modal {
-  max-width: 650px;
+.profile-modal.provider-profile-modal {
+  max-width: 820px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 38px;
+  display: flex;
+  flex-direction: column;
+}
+
+.provider-profile-close {
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+}
+
+.provider-profile-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  padding: 32px 36px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255, 130, 53, 0.32), transparent 31%),
+    linear-gradient(135deg, rgba(24, 27, 25, 0.94), rgba(24, 27, 25, 0.76));
+}
+
+.provider-profile-hero::after {
+  content: '';
+  position: absolute;
+  right: -86px;
+  top: -116px;
+  width: 270px;
+  height: 270px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .profile-modal-avatar {
-  width: 90px;
-  height: 90px;
-  border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 1;
+  width: 128px;
+  height: 128px;
+  border-radius: 34px;
   object-fit: cover;
-  border: 3px solid #ffffff;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  border: 3px solid rgba(255, 255, 255, 0.82);
+  box-shadow: 0 24px 44px -28px rgba(0, 0, 0, 0.82);
+}
+
+.provider-profile-copy {
+  position: relative;
+  z-index: 1;
+  padding-right: 28px;
+}
+
+.provider-profile-kicker {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--sunset-orange);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.provider-profile-copy .card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 8px;
+  color: #ffffff;
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.provider-profile-copy .body-text {
+  max-width: 560px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.provider-profile-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.provider-profile-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  padding: 7px 10px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.provider-profile-body {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 34px;
+}
+
+.provider-profile-section {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.24)),
+    rgba(255, 255, 255, 0.34);
+}
+
+.provider-section-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.provider-section-heading > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--sunset-orange);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.provider-section-heading .card-title {
+  margin-bottom: 3px;
+  font-size: 18px;
+}
+
+.provider-bio {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.provider-badge-row {
+  margin-top: 2px;
 }
 
 .portfolio-carousel {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 8px;
 }
 
 .portfolio-img {
-  width: 160px;
-  height: 110px;
-  border-radius: var(--radius-sm);
+  width: 100%;
+  height: 168px;
+  border-radius: 24px;
   object-fit: cover;
-  flex-shrink: 0;
   border: 2px solid #ffffff;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 12px 24px -18px rgba(24, 27, 25, 0.35);
 }
 
 .reviews-list {
-  max-height: 200px;
+  display: grid;
+  gap: 12px;
+  max-height: 250px;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .review-item {
-  padding: 12px;
-  border-radius: var(--radius-sm);
+  padding: 14px;
+  border-radius: 22px;
+}
+
+.review-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.provider-hiring-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 34px 28px;
+  border-top: 1px solid var(--frost-border);
+  background: rgba(255, 255, 255, 0.28);
 }
 
 /* Map specific pins style */
@@ -1161,6 +1400,180 @@ const selectJob = (id: number) => {
   border-radius: 4px;
   background: rgba(0,0,0,0.1);
   outline: none;
+}
+
+.task-request-modal {
+  max-width: 760px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 38px;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-close-btn {
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+}
+
+.task-request-hero {
+  position: relative;
+  padding: 30px 34px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 90% 8%, rgba(255, 130, 53, 0.36), transparent 34%),
+    linear-gradient(135deg, rgba(24, 27, 25, 0.94), rgba(24, 27, 25, 0.76));
+}
+
+.task-request-hero::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  bottom: -120px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.task-kicker {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  color: var(--sunset-orange);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.task-request-hero .card-title {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin: 9px 0;
+  color: #ffffff;
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.task-request-hero .body-text {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.task-hero-steps {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.task-hero-steps span {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  padding: 7px 10px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.task-request-form {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 34px 30px;
+}
+
+.task-form-section {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.24)),
+    rgba(255, 255, 255, 0.34);
+}
+
+.privacy-task-section {
+  background:
+    linear-gradient(145deg, rgba(253, 238, 227, 0.86), rgba(255, 255, 255, 0.3)),
+    rgba(255, 255, 255, 0.34);
+}
+
+.task-section-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.task-section-heading > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--sunset-orange);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.task-section-heading .card-title {
+  margin-bottom: 3px;
+  font-size: 18px;
+}
+
+.task-urgent-toggle {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--frost-border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.48);
+  cursor: pointer;
+}
+
+.task-urgent-toggle strong,
+.task-urgent-toggle small,
+.field-helper {
+  display: block;
+}
+
+.task-urgent-toggle strong {
+  color: var(--text-dark);
+  font-size: 13px;
+}
+
+.task-urgent-toggle small,
+.field-helper {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.task-request-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
 }
 
 .dashboard-container {
@@ -1352,6 +1765,42 @@ const selectJob = (id: number) => {
 @media (max-width: 640px) {
   .dashboard-command {
     padding: 18px;
+  }
+
+  .provider-profile-hero,
+  .portfolio-carousel,
+  .task-request-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .provider-profile-hero {
+    padding: 28px 22px;
+  }
+
+  .provider-profile-body {
+    padding: 18px;
+  }
+
+  .task-request-hero {
+    padding: 28px 22px;
+  }
+
+  .task-request-form {
+    padding: 18px;
+  }
+
+  .task-request-footer {
+    display: grid;
+  }
+
+  .provider-hiring-bar {
+    display: grid;
+    padding: 18px;
+  }
+
+  .profile-modal-avatar {
+    width: 112px;
+    height: 112px;
   }
 
   .provider-card-main {

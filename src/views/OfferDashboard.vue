@@ -368,44 +368,56 @@ const getDistanceText = (job: Job) => {
 
     <!-- JOB DETAILS & POSTULATION FORM MODAL (3.3) -->
     <div v-if="selectedJobId" class="modal-overlay">
-      <div v-if="selectedJob" class="modal-content glass-panel text-left">
-        <button @click="selectedJobId = null" class="close-btn-round">
+      <div v-if="selectedJob" class="modal-content glass-panel text-left bid-review-modal">
+        <button @click="selectedJobId = null" class="close-btn-round bid-close-btn">
           <X :size="18" />
         </button>
         
-        <div class="text-left">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <span class="badge badge-success mb-1">{{ selectedJob.category }}</span>
-              <h3 class="card-title text-2xl">{{ selectedJob.title }}</h3>
-            </div>
-            <span :class="['badge', selectedJob.isUrgent ? 'badge-warning' : 'badge-success']">
-              {{ selectedJob.isUrgent ? '🚨 URGENTE' : 'Normal' }}
-            </span>
+        <div class="bid-review-hero">
+          <span class="bid-kicker">{{ selectedJob.category }}</span>
+          <h3 class="card-title">{{ selectedJob.title }}</h3>
+          <p class="body-text">
+            Revisa lo que solicita el cliente, confirma si está dentro de tu zona y envía una propuesta clara
+            con tu explicación técnica, precio y tiempo estimado.
+          </p>
+          <div class="bid-hero-chips">
+            <span :class="{ urgent: selectedJob.isUrgent }">{{ selectedJob.isUrgent ? 'Urgente' : 'Normal' }}</span>
+            <span>${{ selectedJob.budget }} MXN ofrecidos</span>
+            <span>{{ getDistanceText(selectedJob) }}</span>
           </div>
+        </div>
 
-          <p class="body-text mb-4">{{ selectedJob.description }}</p>
+        <div class="bid-review-body">
+          <section class="bid-review-section">
+            <div class="bid-section-heading">
+              <span>01</span>
+              <div>
+                <h4 class="card-title">Solicitud del cliente</h4>
+                <p class="body-text text-xs">Entiende el problema antes de postularte.</p>
+              </div>
+            </div>
+            <p class="body-text bid-description">{{ selectedJob.description }}</p>
+            <div class="job-meta-grid compact-meta-grid">
+              <div class="meta-item">
+                <span class="text-xs text-muted block">Presupuesto del cliente</span>
+                <span class="font-semibold text-lg text-green">${{ selectedJob.budget }} MXN</span>
+              </div>
+              <div class="meta-item">
+                <span class="text-xs text-muted block">Otros postulantes</span>
+                <span class="font-semibold text-sm block mt-1">{{ selectedJob.bids.length }} experto(s)</span>
+              </div>
+            </div>
+          </section>
 
-          <div class="job-meta-grid mb-6">
-            <div class="meta-item">
-              <span class="text-xs text-muted block">Presupuesto del cliente</span>
-              <span class="font-semibold text-lg text-green">${{ selectedJob.budget }} MXN</span>
+          <section class="bid-review-section privacy-bid-section">
+            <div class="bid-section-heading">
+              <span>02</span>
+              <div>
+                <h4 class="card-title">Zona aproximada</h4>
+                <p class="body-text text-xs">La dirección exacta se libera solo si el cliente acepta y fondea Escrow.</p>
+              </div>
             </div>
-            <div class="meta-item">
-              <span class="text-xs text-muted block">Distancia estimada</span>
-              <span class="font-semibold text-sm flex items-center mt-1">
-                <MapPin :size="14" class="mr-1 text-green" /> {{ getDistanceText(selectedJob) }}
-              </span>
-            </div>
-            <div class="meta-item">
-              <span class="text-xs text-muted block">Otros postulantes</span>
-              <span class="font-semibold text-sm block mt-1">{{ selectedJob.bids.length }} experto(s)</span>
-            </div>
-          </div>
 
-          <!-- Privacy Area Simulation -->
-          <div class="privacy-map-section mb-6">
-            <h4 class="card-title text-sm mb-2 text-muted uppercase">Zona de referencia aproximada</h4>
             <div class="mini-privacy-map">
               <div class="privacy-map-orbs">
                 <div class="approx-center-glow"></div>
@@ -415,140 +427,202 @@ const getDistanceText = (job: Job) => {
                 <MapPin :size="14" class="mr-1 text-green" /> Zona aproximada: {{ selectedJob.approxAddress }}
               </span>
             </div>
-            <p class="body-text text-xs italic mt-2 text-muted">⚠️ La calle y número del cliente se te revelarán automáticamente en la interfaz del chat una vez que el cliente apruebe tu propuesta técnica y deposite los fondos en la garantía Escrow.</p>
-          </div>
+            <p class="body-text text-xs italic mt-2 text-muted">
+              La calle y número se revelan en el chat cuando el cliente aprueba tu propuesta y deposita los fondos.
+            </p>
+          </section>
 
           <!-- Bidding Form -->
-          <h4 class="card-title border-t pt-4 mb-4">Enviar propuesta técnica</h4>
-          <form @submit.prevent="handleSendBid" class="bid-submit-form">
-            <div class="form-group mb-4">
-              <label class="form-label">Detalles de tu propuesta (Explicación técnica)</label>
-              <div class="pill-input text-area-input">
-                <textarea 
-                  v-model="bidProposal" 
-                  placeholder="Describe cómo planeas solucionar el problema y tu experiencia en trabajos similares." 
-                  rows="3"
-                  required
-                ></textarea>
+          <section class="bid-review-section">
+            <div class="bid-section-heading">
+              <span>03</span>
+              <div>
+                <h4 class="card-title">Tu propuesta técnica</h4>
+                <p class="body-text text-xs">Explica por qué eres adecuado y cuánto cobrarías.</p>
               </div>
             </div>
 
-            <div class="grid-2 mb-6">
-              <div class="form-group">
-                <label class="form-label">Tu contrapropuesta económica (MXN)</label>
-                <div class="pill-input">
-                  <input 
-                    v-model.number="bidAmount" 
-                    type="number" 
-                    required 
-                    min="1"
-                  />
+            <form @submit.prevent="handleSendBid" class="bid-submit-form">
+              <div class="form-group mb-4">
+                <label class="form-label">Explicación técnica</label>
+                <div class="pill-input text-area-input">
+                  <textarea 
+                    v-model="bidProposal" 
+                    placeholder="Describe cómo planeas solucionar el problema y tu experiencia en trabajos similares." 
+                    rows="3"
+                    required
+                  ></textarea>
                 </div>
               </div>
-              <div class="form-group">
-                <label class="form-label">Tiempo estimado de llegada</label>
-                <div class="pill-input">
-                  <Clock :size="16" class="input-icon" />
-                  <select v-model="bidArrival">
-                    <option value="15 min">15 minutos</option>
-                    <option value="20 min">20 minutos</option>
-                    <option value="30 min">30 minutos</option>
-                    <option value="45 min">45 minutos</option>
-                  </select>
-                </div>
-              </div>
-            </div>
 
-            <button type="submit" class="premium-btn w-full">
-              <span>Enviar Propuesta de Servicio</span>
-              <span class="icon-circle">
-                <ArrowRight :size="18" />
-              </span>
-            </button>
-          </form>
+              <div class="grid-2 mb-6">
+                <div class="form-group">
+                  <label class="form-label">Tu precio propuesto (MXN)</label>
+                  <div class="pill-input">
+                    <input 
+                      v-model.number="bidAmount" 
+                      type="number" 
+                      required 
+                      min="1"
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Tiempo estimado de llegada</label>
+                  <div class="pill-input">
+                    <Clock :size="16" class="input-icon" />
+                    <select v-model="bidArrival">
+                      <option value="15 min">15 minutos</option>
+                      <option value="20 min">20 minutos</option>
+                      <option value="30 min">30 minutos</option>
+                      <option value="45 min">45 minutos</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bid-review-footer">
+                <p class="body-text text-xs">Si el cliente acepta, el chat y la ubicación exacta se activarán tras el pago Escrow.</p>
+                <button type="submit" class="premium-btn">
+                  <span>Enviar propuesta</span>
+                  <span class="icon-circle">
+                    <ArrowRight :size="18" />
+                  </span>
+                </button>
+              </div>
+            </form>
+          </section>
         </div>
       </div>
     </div>
 
     <!-- PROFILE MODAL CONFIGURATION (3.2) -->
     <div v-if="isProfileModalOpen" class="modal-overlay">
-      <div class="modal-content glass-panel text-left">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="card-title text-xl flex items-center gap-2">
-            ⚙️ Editar Perfil de Proveedor
-          </h3>
-          <button @click="isProfileModalOpen = false" class="close-btn-round">
-            <X :size="18" />
-          </button>
+      <div class="modal-content glass-panel text-left profile-editor-modal">
+        <button @click="isProfileModalOpen = false" class="close-btn-round profile-close-btn">
+          <X :size="18" />
+        </button>
+
+        <div class="profile-editor-hero">
+          <img
+            :src="providerProfile?.profileImg"
+            class="profile-editor-photo"
+            alt="Foto de perfil del proveedor"
+          />
+          <div class="profile-editor-copy">
+            <span class="profile-editor-kicker">Perfil profesional</span>
+            <h3 class="card-title">Configura cómo te verán los clientes</h3>
+            <p class="body-text">
+              Estos datos son mock para el prototipo, pero representan la información que ayuda a que un solicitante
+              entienda tu oficio, tu precio y tu nivel de confianza antes de aceptar una propuesta.
+            </p>
+            <div class="profile-editor-stats" style="padding-bottom: 40px;">
+              <span>{{ providerProfile?.name || 'Proveedor local' }}</span>
+              <span>{{ providerProfile?.rating || '4.9' }} ★</span>
+              <span>{{ providerProfile?.completedJobs || 0 }} trabajos</span>
+            </div>
+          </div>
         </div>
 
-        <form @submit.prevent="handleSaveProfile" class="profile-form">
-          <div class="form-group mb-4">
-            <label class="form-label">Categoría Técnica Principal</label>
-            <div class="pill-input">
-              <select v-model="profileCategory">
-                <option value="Fontanería">Fontanería</option>
-                <option value="Electricidad">Electricidad</option>
-                <option value="Carpintería">Carpintería</option>
-              </select>
+        <form @submit.prevent="handleSaveProfile" class="profile-form profile-editor-form">
+          <section class="profile-form-section">
+            <div class="profile-section-heading">
+              <span>01</span>
+              <div>
+                <h4 class="card-title">Servicio y tarifa</h4>
+                <p class="body-text text-xs">Define el oficio principal y el rango de precio que verá el cliente.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="form-group mb-4">
-            <label class="form-label">Tarifa Promedio por hora (MXN)</label>
-            <div class="pill-input">
-              <input 
-                v-model.number="profileFee" 
-                type="number" 
-                required 
-              />
+            <div class="profile-fields-grid">
+              <div class="form-group">
+                <label class="form-label">Categoría Técnica Principal</label>
+                <div class="pill-input">
+                  <select v-model="profileCategory">
+                    <option value="Fontanería">Fontanería</option>
+                    <option value="Electricidad">Electricidad</option>
+                    <option value="Carpintería">Carpintería</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Tarifa Promedio por hora (MXN)</label>
+                <div class="pill-input">
+                  <input 
+                    v-model.number="profileFee" 
+                    type="number" 
+                    required 
+                  />
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <div class="form-group mb-4">
-            <label class="form-label">Biografía y Presentación Comercial</label>
-            <div class="pill-input text-area-input">
-              <textarea 
-                v-model="profileBio" 
-                placeholder="Escribe sobre tus años de experiencia, especialidad y garantías que ofreces a los clientes." 
-                rows="4"
-                required
-              ></textarea>
+          <section class="profile-form-section">
+            <div class="profile-section-heading">
+              <span>02</span>
+              <div>
+                <h4 class="card-title">Presentación comercial</h4>
+                <p class="body-text text-xs">Explica experiencia, especialidad, garantía y tipo de trabajos que aceptas.</p>
+              </div>
             </div>
-          </div>
 
-          <!-- Document Verification Section -->
-          <h4 class="card-title text-sm border-t pt-4 mb-2 text-muted">Centro de Verificación de Identidad</h4>
-          <p class="body-text text-xs mb-4">Para garantizar la seguridad de la comunidad, sube una foto de tu identificación oficial (INE o Pasaporte). Una vez validada, recibirás la insignia "Identidad Verificada" en tu perfil.</p>
-          
-          <div class="form-group mb-6">
-            <label class="form-label">Documento de Identificación Oficial</label>
-            <div class="file-upload-wrapper text-center glass-panel-sm">
-              <Upload :size="32" class="text-green mx-auto mb-2 opacity-75" />
-              <p class="body-text text-sm font-semibold mb-1">
-                {{ idFileUploaded ? '¡Documento cargado correctamente!' : 'Arrastra o selecciona un archivo' }}
-              </p>
-              <p class="body-text text-xs opacity-75 mb-3">
-                {{ idFileUploaded ? idFileName : 'Formatos soportados: PDF, JPG, PNG (Max 5MB)' }}
-              </p>
+            <div class="form-group">
+              <label class="form-label">Biografía y Presentación Comercial</label>
+              <div class="pill-input text-area-input profile-bio-input">
+                <textarea 
+                  v-model="profileBio" 
+                  placeholder="Escribe sobre tus años de experiencia, especialidad y garantías que ofreces a los clientes." 
+                  rows="4"
+                  required
+                ></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="profile-form-section verification-section">
+            <div class="profile-section-heading">
+              <span>03</span>
+              <div>
+                <h4 class="card-title">Verificación de identidad</h4>
+                <p class="body-text text-xs">La insignia de identidad aumenta la confianza antes de que un cliente acepte tu propuesta.</p>
+              </div>
+            </div>
+
+            <div class="file-upload-wrapper profile-upload-card text-left">
+              <div class="upload-icon-shell">
+                <Upload :size="26" />
+              </div>
+              <div class="upload-copy">
+                <p class="body-text text-sm font-semibold mb-1">
+                  {{ idFileUploaded ? 'Documento cargado correctamente' : 'Sube INE, pasaporte o documento oficial' }}
+                </p>
+                <p class="body-text text-xs opacity-75">
+                  {{ idFileUploaded ? idFileName : 'Formatos soportados: PDF, JPG, PNG (Max 5MB)' }}
+                </p>
+              </div>
               <input 
                 type="file" 
                 id="id-file-input" 
                 class="hidden-file-input" 
                 @change="handleUploadId"
               />
-              <label for="id-file-input" class="secondary-btn text-xs py-2 cursor-pointer">
+              <label for="id-file-input" class="secondary-btn text-xs py-2 cursor-pointer upload-action">
                 {{ idFileUploaded ? 'Cambiar archivo' : 'Seleccionar Archivo' }}
               </label>
             </div>
-          </div>
+          </section>
 
-          <button type="submit" class="premium-btn w-full">
-            <span>Guardar Configuración</span>
-            <span class="icon-circle">
-              <CheckCircle :size="18" />
-            </span>
-          </button>
+          <div class="profile-editor-footer">
+            <p class="body-text text-xs">Tu perfil se usará para aparecer en búsquedas y para respaldar tus postulaciones.</p>
+            <button type="submit" class="premium-btn">
+              <span>Guardar Configuración</span>
+              <span class="icon-circle">
+                <CheckCircle :size="18" />
+              </span>
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -824,6 +898,201 @@ const getDistanceText = (job: Job) => {
   position: relative;
 }
 
+.profile-editor-modal {
+  max-width: 780px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 38px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-close-btn {
+  top: 18px;
+  right: 18px;
+  z-index: 4;
+}
+
+.profile-editor-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  padding: 30px 34px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(151, 197, 159, 0.36), transparent 30%),
+    linear-gradient(135deg, rgba(24, 27, 25, 0.92), rgba(24, 27, 25, 0.74));
+}
+
+.profile-editor-hero::after {
+  content: '';
+  position: absolute;
+  right: -70px;
+  top: -100px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.profile-editor-photo {
+  position: relative;
+  z-index: 1;
+  width: 118px;
+  height: 118px;
+  border-radius: 32px;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 44px -28px rgba(0, 0, 0, 0.8);
+}
+
+.profile-editor-copy {
+  position: relative;
+  z-index: 1;
+  padding-right: 28px;
+}
+
+.profile-editor-kicker {
+  display: inline-flex;
+  width: fit-content;
+  color: var(--verde-brote);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-editor-copy .card-title {
+  margin: 8px 0 8px;
+  color: #ffffff;
+  font-size: clamp(26px, 3.3vw, 38px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.profile-editor-copy .body-text {
+  max-width: 560px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.profile-editor-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.profile-editor-stats span {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  padding: 7px 10px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profile-editor-form {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 34px 30px;
+}
+
+.profile-form-section {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0.24)),
+    rgba(255, 255, 255, 0.34);
+}
+
+.profile-section-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.profile-section-heading > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--verde-terraria);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.profile-section-heading .card-title {
+  margin-bottom: 3px;
+  font-size: 18px;
+}
+
+.profile-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.profile-bio-input {
+  border-radius: 24px !important;
+}
+
+.verification-section {
+  background:
+    linear-gradient(145deg, rgba(234, 240, 235, 0.84), rgba(255, 255, 255, 0.32)),
+    rgba(255, 255, 255, 0.38);
+}
+
+.profile-upload-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  border-radius: 26px;
+  border: 1px dashed rgba(59, 96, 67, 0.34);
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.upload-icon-shell {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  color: #ffffff;
+  background: var(--verde-terraria);
+}
+
+.upload-copy {
+  min-width: 0;
+}
+
+.upload-action {
+  white-space: nowrap;
+}
+
+.profile-editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-top: 4px;
+}
+
 .hidden-file-input {
   display: none;
 }
@@ -923,6 +1192,163 @@ const getDistanceText = (job: Job) => {
   border-radius: 4px;
   background: rgba(0,0,0,0.1);
   outline: none;
+}
+
+.bid-review-modal {
+  max-width: 780px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 38px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bid-close-btn {
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+}
+
+.bid-review-hero {
+  position: relative;
+  padding: 30px 34px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(151, 197, 159, 0.34), transparent 34%),
+    linear-gradient(135deg, rgba(24, 27, 25, 0.94), rgba(24, 27, 25, 0.76));
+}
+
+.bid-review-hero::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  bottom: -120px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.bid-kicker {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  color: var(--verde-brote);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bid-review-hero .card-title {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 9px 0;
+  color: #ffffff;
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.bid-review-hero .body-text {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.bid-hero-chips {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.bid-hero-chips span {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--radius-pill);
+  padding: 7px 10px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.bid-hero-chips span.urgent {
+  background: rgba(255, 130, 53, 0.22);
+  color: #ffffff;
+}
+
+.bid-review-body {
+  display: grid;
+  gap: 16px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 34px 30px;
+}
+
+.bid-review-section {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.24)),
+    rgba(255, 255, 255, 0.34);
+}
+
+.privacy-bid-section {
+  background:
+    linear-gradient(145deg, rgba(234, 240, 235, 0.9), rgba(255, 255, 255, 0.3)),
+    rgba(255, 255, 255, 0.34);
+}
+
+.bid-section-heading {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.bid-section-heading > span {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: var(--verde-terraria);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.bid-section-heading .card-title {
+  margin-bottom: 3px;
+  font-size: 18px;
+}
+
+.bid-description {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.compact-meta-grid {
+  margin-bottom: 0;
+}
+
+.bid-review-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
 }
 
 .dashboard-container {
@@ -1098,6 +1524,41 @@ const getDistanceText = (job: Job) => {
 
   .controls-bar {
     align-items: stretch;
+  }
+
+  .profile-editor-hero,
+  .profile-fields-grid,
+  .profile-upload-card,
+  .bid-review-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-editor-hero {
+    padding: 28px 22px;
+  }
+
+  .profile-editor-form {
+    padding: 18px;
+  }
+
+  .bid-review-hero {
+    padding: 28px 22px;
+  }
+
+  .bid-review-body {
+    padding: 18px;
+  }
+
+  .bid-review-footer {
+    display: grid;
+  }
+
+  .profile-editor-footer {
+    display: grid;
+  }
+
+  .upload-action {
+    width: 100%;
   }
 
   .view-toggle {

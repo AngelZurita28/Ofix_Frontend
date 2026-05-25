@@ -33,10 +33,10 @@ const { state, toggleMode, logout, navigateTo } = useStore();
         <div class="mode-switch-base glass-panel-sm" @click="toggleMode">
           <div :class="['mode-slider', state.activeMode.toLowerCase()]"></div>
           <span :class="['mode-label-btn', { active: state.activeMode === 'DEMANDA' }]">
-            Contratar Tareas
+            Contratar
           </span>
           <span :class="['mode-label-btn', { active: state.activeMode === 'OFERTA' }]">
-            Ofrecer Oficio
+            Ofrecer
           </span>
         </div>
       </div>
@@ -75,7 +75,7 @@ const { state, toggleMode, logout, navigateTo } = useStore();
     <!-- Footer Bar -->
     <!-- <footer class="app-footer">
       <div class="footer-inner glass-panel-sm">
-        <p class="body-text text-xs">© 2026 Ofix (Terra) Conexión Local. Desarrollado con 🧡 para fines de prototipo y validación visual.</p>
+        <p class="body-text text-xs">© 2026 Ofiix(Terra) Conexión Local. Desarrollado con 🧡 para fines de prototipo y validación visual.</p>
         <div class="flex gap-4">
           <a href="#CHECKLIST.md" class="text-xs text-muted hover-accent">CHECKLIST.md</a>
           <span class="text-xs text-muted">|</span>
