@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "analisis_implementacion/DESIGN.md",
+                "file": "GUION.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "DESIGN"
+              "title": "GUION"
             }
           }
         ]
@@ -185,8 +185,8 @@
   },
   "active": "e6efb83cb753bd2c",
   "lastOpenFiles": [
-    "DESIGN.md",
     "analisis_implementacion/DESIGN.md",
+    "DESIGN.md",
     "plan de implementacion.md",
     "Flujo.md",
     "AUDITED.md",

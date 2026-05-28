@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ofiix - Presentación Vertical Interactiva</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Poppins (Títulos) e Inter (Cuerpo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Configuración Personalizada de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            cream: '#f7ede5',
+                            creamLight: '#faf5f0',
+                            peach: '#fbdbc5',
+                            orange: '#e55a39',
+                            orangeDark: '#c74426',
+                            dark: '#111111',
+                            darkGray: '#1a1a1a',
+                            lightGray: '#f3ece6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Desplazamiento vertical fluido de diapositivas */
+        .snap-container {
+            scroll-snap-type: y mandatory;
+            overflow-y: scroll;
+            height: 100vh;
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .snap-container::-webkit-scrollbar {
+            display: none;
+            /* Chrome/Safari/Edge */
+        }
+
+        .slide-section {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Ajuste específico para cuando el Simulador Vertical está ACTIVO en pantallas horizontales */
+        body.simulator-active {
+            background-color: #121212;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        body.simulator-active #main-wrapper {
+            width: 450px;
+            height: 900px;
+            max-height: 95vh;
+            border: 12px solid #2d2d2d;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            background: #f7ede5;
+        }
+
+        body.simulator-active .snap-container {
+            height: 100% !important;
+        }
+
+        body.simulator-active .slide-section {
+            height: 100% !important;
+            padding: 2.5rem 1.5rem !important;
+        }
+
+        /* Degradado de fondo con estilo de la presentación */
+        .bg-cream-radial {
+            background-color: #f7ede5;
+            background-image: radial-gradient(circle at 50% 100%, #fbdbc5 0%, #f7ede5 70%);
+        }
+    </style>
+</head>
+
+<body class="font-sans text-brand-dark bg-brand-cream overflow-hidden">
+
+    <!-- Panel de control flotante superior (Interactividad de la Demo) -->
+    <div class="fixed top-4 left-4 right-4 z-50 flex justify-between items-center pointer-events-none">
+        <!-- Badge de Conferencia
+        <div
+            class="bg-white/95 backdrop-blur shadow-md px-3 py-1.5 rounded-full text-xs font-semibold text-brand-orange border border-brand-peach flex items-center gap-1.5 pointer-events-auto">
+            <span class="inline-block w-2 h-2 rounded-full bg-brand-orange animate-pulse"></span>
+            INNOVATEC 2026
+        </div> -->
+
+        <!-- Botón Simulador de Monitor Vertical -->
+        <!-- <button id="toggle-simulator"
+            class="bg-brand-dark hover:bg-brand-darkGray text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg transition-all duration-300 flex items-center gap-2 pointer-events-auto">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span id="simulator-btn-text">Simular Monitor Vertical</span>
+        </button> -->
+    </div>
+
+    <!-- Indicadores de Navegación Lateral (Dots) -->
+    <!-- <div class="fixed right-6 top-1/2 -translate-y-1/2 z-40 flex flex-col gap-3">
+        <button onclick="goToSlide(0)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange bg-brand-orange transition-all duration-300"
+            title="Inicio" data-index="0"></button>
+        <button onclick="goToSlide(1)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange/40 hover:bg-brand-orange/40 transition-all duration-300"
+            title="Solución" data-index="1"></button>
+        <button onclick="goToSlide(2)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange/40 hover:bg-brand-orange/40 transition-all duration-300"
+            title="Cómo Funciona" data-index="2"></button>
+        <button onclick="goToSlide(3)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange/40 hover:bg-brand-orange/40 transition-all duration-300"
+            title="Seguridad" data-index="3"></button>
+        <button onclick="goToSlide(4)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange/40 hover:bg-brand-orange/40 transition-all duration-300"
+            title="Proveedores" data-index="4"></button>
+        <button onclick="goToSlide(5)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange/40 hover:bg-brand-orange/40 transition-all duration-300"
+            title="Finanzas" data-index="5"></button>
+        <button onclick="goToSlide(6)"
+            class="nav-dot w-3.5 h-3.5 rounded-full border-2 border-brand-orange/40 hover:bg-brand-orange/40 transition-all duration-300"
+            title="Cierre" data-index="6"></button>
+    </div>
+
+    <!-- Contenedor Principal (Soporta el modo simulador) -->
+    <div id="main-wrapper" class="w-full h-screen transition-all duration-500">
+
+        <!-- Contenedor con Scroll Snap -->
+        <div id="slides-container" class="snap-container h-full w-full">
+
+            <!-- Slide 1: Portada y Planteamiento del Problema -->
+            <section class="slide-section p-8 md:p-12 bg-cream-radial">
+                <!-- Top Spacer to avoid overlapping with absolute badge -->
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-6">
+                    <span class="text-xs font-bold tracking-wider text-brand-orange uppercase"><i
+                            class="fa-solid fa-triangle-exclamation mr-1.5"></i>El Problema Cotidiano</span>
+
+                    <h1
+                        class="font-poppins text-4xl md:text-5xl font-black text-brand-dark leading-tight tracking-tight">
+                        ¿Se te averió el auto?<br>
+                        <span class="text-brand-orange">¿Falló tu computadora?</span>
+                    </h1>
+
+                    <p class="text-base md:text-lg text-gray-700 leading-relaxed font-light">
+                        Ante estos imprevistos cotidianos, surge un gran reto en nuestras comunidades: la enorme
+                        dificultad para encontrar asistencia <strong class="font-semibold text-brand-dark">rápida,
+                            honesta y segura</strong>.
+                    </p>
+
+                    <!-- Mockup de Mapa del Teléfono optimizado para vertical -->
+                    <div
+                        class="relative mx-auto w-full max-w-[280px] bg-white rounded-3xl p-3 shadow-xl border border-brand-peach/50 my-2">
+                        <div
+                            class="bg-gray-100 rounded-2xl h-44 overflow-hidden relative flex items-center justify-center">
+                            <!-- Mapa Simulado SVG -->
+                            <svg class="absolute inset-0 w-full h-full text-brand-peach/30"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M0,20 Q50,40 100,20 T100,80" fill="none" stroke="#e55a39" stroke-width="2"
+                                    stroke-dasharray="2,2" />
+                                <path d="M20,0 Q40,50 20,100" fill="none" stroke="#ddd" stroke-width="1.5" />
+                                <circle cx="60" cy="45" r="25" fill="#e55a39" fill-opacity="0.1" />
+                                <circle cx="60" cy="45" r="3" fill="#e55a39" />
+                            </svg>
+                            <!-- Widget Flotante del mapa -->
+                            <div
+                                class="absolute bottom-2 left-2 right-2 bg-white/90 backdrop-blur-sm p-2 rounded-xl text-[10px] shadow flex items-center gap-2">
+                                <div
+                                    class="w-7 h-7 bg-brand-orange/10 text-brand-orange rounded-lg flex items-center justify-center font-bold text-xs">
+                                    <i class="fa-solid fa-wrench"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="font-bold text-brand-dark">Mecánico Cercano</p>
+                                    <p class="text-gray-500 text-[8px]">A 400m • 4.9 <i
+                                            class="fa-solid fa-star text-amber-400"></i></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer de la Diapositiva -->
+                <div class="border-t border-brand-peach/40 pt-4 flex flex-col gap-2">
+
+                    <div class="flex items-center justify-between text-[11px] text-gray-500">
+                        <span>categoría bienes de consumo final</span>
+                        <span class="font-mono text-[9px] opacity-60">Diapositiva 1/7</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 2: La Solución Ofiix -->
+            <section class="slide-section p-8 md:p-12 bg-white">
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-5">
+                    <span class="text-xs font-bold tracking-wider text-emerald-600 uppercase"><i
+                            class="fa-solid fa-lightbulb mr-1.5"></i>La Solución</span>
+
+                    <h2 class="font-poppins text-3xl md:text-4xl font-black text-brand-dark leading-none">
+                        Ofiix: conecta <span class="text-brand-orange">necesidades</span> con oficios.
+                    </h2>
+
+                    <p class="text-sm md:text-base text-gray-600 leading-relaxed">
+                        Una plataforma web pensada para ofrecer una experiencia rápida y fluida, con un backend robusto
+                        de alto rendimiento y almacenamiento de datos ágil.
+                    </p>
+
+                    <!-- Tarjetas de Arquitectura en formato vertical -->
+                    <div class="space-y-3 mt-2">
+                        <!-- Card Vue.js -->
+                        <div
+                            class="flex items-center gap-4 bg-brand-creamLight p-3.5 rounded-2xl border border-brand-peach/30">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 text-lg shadow-sm">
+                                <i class="fa-brands fa-vuejs"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-sm text-brand-dark">Vue.js</h4>
+                                    <span
+                                        class="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-mono">FRONTEND</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5 leading-snug">Interfaz de alta velocidad y
+                                    reactividad al instante.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card Node.js -->
+                        <div class="flex items-center gap-4 bg-brand-dark text-white p-3.5 rounded-2xl">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-neutral-800 flex items-center justify-center text-emerald-400 text-lg shadow-sm">
+                                <i class="fa-brands fa-node-js"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-sm">Node.js</h4>
+                                    <span
+                                        class="text-[9px] bg-neutral-800 text-emerald-300 px-1.5 py-0.5 rounded font-mono">BACKEND</span>
+                                </div>
+                                <p class="text-xs text-neutral-300 mt-0.5 leading-snug font-light">Procesamiento masivo
+                                    y conexiones de alta velocidad.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card MongoDB -->
+                        <div
+                            class="flex items-center gap-4 bg-brand-creamLight p-3.5 rounded-2xl border border-brand-peach/30">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center text-green-700 text-lg shadow-sm">
+                                <i class="fa-solid fa-database"></i>
+                            </div>
+                            <div class="flex-grow">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-bold text-sm text-brand-dark">MongoDB</h4>
+                                    <span
+                                        class="text-[9px] bg-green-100 text-green-800 px-1.5 py-0.5 rounded font-mono">DATA</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5 leading-snug">Almacenamiento en la nube dinámico
+                                    y escalable.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex items-center justify-between text-[11px] text-gray-400">
+                    <span>Transparencia y Validación Vecinal</span>
+                    <span class="font-mono text-[9px]">Diapositiva 2/7</span>
+                </div>
+            </section>
+
+            <!-- Slide 3: ¿Cómo funciona? -->
+            <section class="slide-section p-8 md:p-12 bg-brand-creamLight">
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-4">
+                    <span class="text-xs font-bold tracking-wider text-brand-orange uppercase"><i
+                            class="fa-solid fa-sliders mr-1.5"></i>Funcionamiento</span>
+
+                    <h2 class="font-poppins text-3xl md:text-4xl font-black text-brand-dark leading-none">
+                        Tú tienes<br>el control.
+                    </h2>
+
+                    <p class="text-xs md:text-sm text-gray-600 leading-normal">
+                        Entra a la plataforma, publica lo que necesitas y elige la mejor opción. Los proveedores
+                        cercanos te enviarán propuestas detalladas.
+                    </p>
+
+                    <!-- Lista ordenada vertical -->
+                    <div class="space-y-4 mt-2">
+                        <!-- Paso 1 -->
+                        <div class="relative pl-10 border-l-2 border-brand-orange/20 pb-1">
+                            <!-- Círculo indicador numérico -->
+                            <div
+                                class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-brand-orange text-white text-[10px] font-bold flex items-center justify-center shadow">
+                                1</div>
+                            <h4 class="text-sm font-bold text-brand-dark flex items-center gap-2">
+                                Publica tu necesidad
+                            </h4>
+                            <p class="text-xs text-gray-500 mt-0.5">Arreglar un enchufe, pintar una pared o reparar
+                                imprevistos.</p>
+                            <span
+                                class="text-[9px] font-bold text-brand-orange tracking-wider mt-1 block uppercase">Define
+                                tu presupuesto</span>
+                        </div>
+
+                        <!-- Paso 2 -->
+                        <div class="relative pl-10 border-l-2 border-brand-orange/20 pb-1">
+                            <div
+                                class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-brand-orange text-white text-[10px] font-bold flex items-center justify-center shadow">
+                                2</div>
+                            <h4 class="text-sm font-bold text-brand-dark">
+                                Recibe propuestas
+                            </h4>
+                            <p class="text-xs text-gray-500 mt-0.5">Profesionales locales verán tu tarea y te enviarán
+                                cotizaciones claras.</p>
+                            <span
+                                class="text-[9px] font-bold text-brand-orange tracking-wider mt-1 block uppercase font-mono">Compara
+                                al instante</span>
+                        </div>
+
+                        <!-- Paso 3 -->
+                        <div class="relative pl-10">
+                            <div
+                                class="absolute -left-[11px] top-0 w-5 h-5 rounded-full bg-brand-dark text-white text-[10px] font-bold flex items-center justify-center shadow-lg ring-4 ring-brand-cream">
+                                3</div>
+                            <h4 class="text-sm font-bold text-brand-dark">
+                                Elige con transparencia
+                            </h4>
+                            <p class="text-xs text-gray-500 mt-0.5">Revisa opiniones reales de vecinos y perfiles
+                                verificados.</p>
+                            <span
+                                class="inline-flex items-center gap-1 text-[9px] font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded mt-1 uppercase">Pago
+                                protegido Escrow</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="border-t border-brand-peach/30 pt-4 flex items-center justify-between text-[11px] text-gray-500">
+                    <span>Proceso 100% Autónomo</span>
+                    <span class="font-mono text-[9px]">Diapositiva 3/7</span>
+                </div>
+            </section>
+
+            <!-- Slide 4: Seguridad y Confianza (Escrow / OpenPay) -->
+            <section class="slide-section p-8 md:p-12 bg-white">
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-4">
+                    <span class="text-xs font-bold tracking-wider text-brand-orange uppercase"><i
+                            class="fa-solid fa-shield-halved mr-1.5"></i>Seguridad de Alto Nivel</span>
+
+                    <h2 class="font-poppins text-3xl md:text-4xl font-black text-brand-dark leading-tight">
+                        Tu dinero y privacidad,<br><span class="text-brand-orange">protegidos.</span>
+                    </h2>
+
+                    <p class="text-xs md:text-sm text-gray-600 leading-relaxed">
+                        Al aceptar una cotización, pagas de forma práctica. Gracias al método <strong
+                            class="text-brand-dark">Escrow</strong>, el dinero se libera solo cuando estás completamente
+                        satisfecho.
+                    </p>
+
+                    <!-- Grid de 4 Pilares de Seguridad optimizados para Pantalla Vertical -->
+                    <div class="grid grid-cols-2 gap-3 mt-2">
+                        <div class="bg-brand-cream/40 p-3 rounded-2xl border border-brand-peach/20">
+                            <div class="text-brand-orange text-base mb-1.5"><i class="fa-solid fa-lock"></i></div>
+                            <h4 class="font-bold text-xs text-brand-dark">Garantía Escrow</h4>
+                            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Liberación de dinero al terminar.
+                            </p>
+                        </div>
+
+                        <div class="bg-brand-cream/40 p-3 rounded-2xl border border-brand-peach/20">
+                            <div class="text-brand-orange text-base mb-1.5"><i class="fa-solid fa-credit-card"></i>
+                            </div>
+                            <h4 class="font-bold text-xs text-brand-dark">OpenPay</h4>
+                            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Soporte y pasarela mexicana líder.
+                            </p>
+                        </div>
+
+                        <div class="bg-brand-cream/40 p-3 rounded-2xl border border-brand-peach/20">
+                            <div class="text-brand-orange text-base mb-1.5"><i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <h4 class="font-bold text-xs text-brand-dark">Mapa Seguro</h4>
+                            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Ubicación exacta protegida.</p>
+                        </div>
+
+                        <div class="bg-brand-cream/40 p-3 rounded-2xl border border-brand-peach/20">
+                            <div class="text-brand-orange text-base mb-1.5"><i class="fa-solid fa-comments"></i></div>
+                            <h4 class="font-bold text-xs text-brand-dark">Chat Integrado</h4>
+                            <p class="text-[10px] text-gray-500 mt-0.5 leading-snug">Conversaciones seguras y
+                                rastreables.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex items-center justify-between text-[11px] text-gray-400">
+                    <span>Cifrado y Protección al Consumidor</span>
+                    <span class="font-mono text-[9px]">Diapositiva 4/7</span>
+                </div>
+            </section>
+
+            <!-- Slide 5: Valor para el Proveedor -->
+            <section class="slide-section p-8 md:p-12 bg-cream-radial">
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-4">
+                    <span class="text-xs font-bold tracking-wider text-brand-orange uppercase"><i
+                            class="fa-solid fa-store mr-1.5"></i>Valor para el Oficio</span>
+
+                    <h2 class="font-poppins text-3xl md:text-4xl font-black text-brand-dark leading-none">
+                        Haz crecer<br>tu negocio.
+                    </h2>
+
+                    <p class="text-xs md:text-sm text-gray-600 leading-normal">
+                        Si tienes un oficio, accede al tablón de necesidades activas de vecinos cercanos que necesitan
+                        ayuda hoy mismo.
+                    </p>
+
+                    <!-- Mockup Tablón de Necesidades Realistas -->
+                    <div class="bg-white rounded-2xl p-4 shadow-md border border-brand-peach/40 my-1">
+                        <div class="flex items-center justify-between pb-2 border-b border-brand-peach/20 mb-2">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Tablón
+                                Activo</span>
+                            <span
+                                class="text-[9px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full font-bold flex items-center gap-1">
+                                <span class="w-1 h-1 rounded-full bg-red-500 animate-ping"></span> En vivo
+                            </span>
+                        </div>
+                        <div class="space-y-2">
+                            <!-- Item 1 -->
+                            <div
+                                class="flex items-center justify-between text-xs p-1.5 hover:bg-brand-creamLight rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-brand-orange font-bold"><i class="fa-solid fa-droplet"></i></span>
+                                    <div>
+                                        <p class="font-semibold text-brand-dark">Fuga de agua</p>
+                                        <p class="text-[9px] text-gray-400">Zona Centro • Urgente</p>
+                                    </div>
+                                </div>
+                                <span class="font-mono font-bold text-brand-orange">$650/hr</span>
+                            </div>
+                            <!-- Item 2 -->
+                            <div
+                                class="flex items-center justify-between text-xs p-1.5 hover:bg-brand-creamLight rounded-lg">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-brand-orange font-bold"><i class="fa-solid fa-bolt"></i></span>
+                                    <div>
+                                        <p class="font-semibold text-brand-dark">Cortocircuito</p>
+                                        <p class="text-[9px] text-gray-400">Col. Del Valle • Hoy</p>
+                                    </div>
+                                </div>
+                                <span class="font-mono font-bold text-brand-orange">$800/hr</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Puntos clave en lista compacta -->
+                    <div class="space-y-1.5 text-xs text-gray-700">
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle-check text-brand-orange mt-0.5"></i>
+                            <p><strong>Tus reglas, tu precio:</strong> Tú controlas el costo de tus presupuestos.</p>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-circle-check text-brand-orange mt-0.5"></i>
+                            <p><strong>Garantía de Cobro:</strong> Dinero depositado antes de iniciar el servicio.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="border-t border-brand-peach/30 pt-4 flex items-center justify-between text-[11px] text-gray-500">
+                    <span>Impulso a la Economía Local</span>
+                    <span class="font-mono text-[9px]">Diapositiva 5/7</span>
+                </div>
+            </section>
+
+            <!-- Slide 6: Finanzas y Rentabilidad -->
+            <section class="slide-section p-8 md:p-12 bg-white">
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-3">
+                    <span class="text-xs font-bold tracking-wider text-emerald-600 uppercase"><i
+                            class="fa-solid fa-chart-line mr-1.5"></i>Análisis de Viabilidad</span>
+
+                    <h2 class="font-poppins text-3xl md:text-4xl font-black text-brand-dark leading-none">
+                        Modelo de<br><span class="text-emerald-600">rentabilidad.</span>
+                    </h2>
+
+                    <p class="text-xs text-gray-500 leading-tight">
+                        Estructura optimizada de bajo mantenimiento y alta escalabilidad en la nube.
+                    </p>
+
+                    <!-- Tarjetas de Métricas -->
+                    <div class="space-y-2.5 mt-1">
+                        <!-- Costos fijos -->
+                        <div
+                            class="bg-gray-50 p-3 rounded-2xl border border-gray-100 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Costos
+                                    Operativos</h4>
+                                <p class="text-lg font-black text-brand-dark font-mono">$13,000 <span
+                                        class="text-xs font-normal">MXN/mes</span></p>
+                            </div>
+                            <div class="text-right text-[9px] text-gray-500">
+                                <p>Servidores: $3,000</p>
+                                <p>Soporte/Leg: $2,500</p>
+                                <p>Sistemas: $7,500</p>
+                            </div>
+                        </div>
+
+                        <!-- Monetización -->
+                        <div class="bg-brand-dark text-white p-3.5 rounded-2xl">
+                            <h4 class="text-[10px] text-brand-peach/70 uppercase tracking-wider font-bold">Modelo
+                                transaccional</h4>
+                            <div class="flex justify-between items-center mt-1">
+                                <div>
+                                    <p class="text-[10px] text-neutral-400">Comisión fija</p>
+                                    <p class="text-lg font-black text-brand-peach font-mono">15%</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[10px] text-neutral-400">Ticket promedio</p>
+                                    <p class="text-base font-bold font-mono">$400 MXN</p>
+                                </div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-neutral-800 text-center text-[10px] text-emerald-300">
+                                <i class="fa-solid fa-circle-dollar-to-slot mr-1"></i> $42 MXN de ganancia neta por
+                                servicio
+                            </div>
+                        </div>
+
+                        <!-- Punto de Equilibrio -->
+                        <div class="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100 text-center">
+                            <h4 class="text-[10px] text-emerald-800 uppercase tracking-wider font-bold">Punto de
+                                Equilibrio</h4>
+                            <p class="text-3xl font-black text-emerald-600 font-mono my-0.5">303</p>
+                            <p class="text-[10px] text-emerald-700">Servicios mensuales requeridos para rentabilidad</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 pt-4 flex items-center justify-between text-[11px] text-gray-400">
+                    <span>Sustentable y Auto-financiado</span>
+                    <span class="font-mono text-[9px]">Diapositiva 6/7</span>
+                </div>
+            </section>
+
+            <!-- Slide 7: Cierre / Call to Action -->
+            <section class="slide-section p-8 md:p-12 bg-cream-radial">
+                <div class="h-8"></div>
+
+                <div class="flex-grow flex flex-col justify-center gap-6 text-center">
+                    <span class="text-xs font-bold tracking-wider text-brand-orange uppercase mx-auto"><i
+                            class="fa-solid fa-star-of-life mr-1.5"></i>Propósito de Ofiix</span>
+
+                    <h2 class="font-poppins text-3xl md:text-4xl font-black text-brand-dark leading-tight">
+                        La tecnología para<br>
+                        <span class="text-brand-orange">apoyarnos entre nosotros.</span>
+                    </h2>
+
+                    <p class="text-sm text-gray-700 leading-relaxed font-light max-w-sm mx-auto">
+                        Es hora de dejar atrás la incertidumbre, fortalecer la economía de nuestras colonias y empezar a
+                        solucionar las cosas con un solo clic. Tu comunidad está lista para ayudarte.
+                    </p>
+
+                    <!-- Botones de Acción adaptados para vertical -->
+                    <div class="flex flex-col gap-2.5 max-w-xs mx-auto w-full mt-2">
+                        <button
+                            class="bg-brand-dark text-white py-3 px-6 rounded-xl font-bold text-sm shadow-md hover:bg-brand-darkGray transition-all flex items-center justify-center gap-2">
+                            <span>¿Necesitas reparar algo?</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button
+                            class="bg-white text-brand-dark border border-brand-peach py-3 px-6 rounded-xl font-bold text-sm shadow-sm hover:bg-brand-creamLight transition-all">
+                            Ofrece tus servicios
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-gray-500 font-semibold mt-4">¡Muchas gracias!</p>
+                </div>
+
+                <!-- Footer de Cierre con referencia al archivo original -->
+                <div class="border-t border-brand-peach/40 pt-4 flex flex-col gap-1.5 text-center">
+                    <p class="text-[9px] text-gray-400 italic font-mono">
+                        <!-- Documento base de referencia: "Presentación sin título.pptx" -->
+                    </p>
+                    <div class="flex items-center justify-center gap-1.5 text-[10px] text-gray-500 font-semibold">
+                        <!-- <span>Ofiix • INNOVATEC 2026</span>
+                        <span>•</span>
+                        <span class="font-mono text-[9px]">Diapositiva 7/7</span> -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('slides-container');
+        const dots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('.slide-section');
+        const toggleSimBtn = document.getElementById('toggle-simulator');
+        const simBtnText = document.getElementById('simulator-btn-text');
+        const body = document.body;
+
+        // --- SIMULADOR DE PANTALLA VERTICAL ---
+        toggleSimBtn.addEventListener('click', () => {
+            const isSimulatorActive = body.classList.toggle('simulator-active');
+            if (isSimulatorActive) {
+                simBtnText.innerText = "Modo Pantalla Completa";
+            } else {
+                simBtnText.innerText = "Simular Monitor Vertical";
+            }
+            // Recalcular scroll tras transiciones
+            setTimeout(() => {
+                updateActiveIndicator();
+            }, 300);
+        });
+
+        // --- GESTIÓN DE INDICADORES DE NAVEGACIÓN (DOTS) ---
+        function updateActiveIndicator() {
+            const scrollPosition = container.scrollTop;
+            const slideHeight = container.clientHeight;
+            const activeIndex = Math.round(scrollPosition / slideHeight);
+
+            dots.forEach((dot, index) => {
+                if (index === activeIndex) {
+                    dot.classList.add('bg-brand-orange', 'w-4', 'h-4');
+                    dot.classList.remove('bg-brand-orange/40');
+                } else {
+                    dot.classList.remove('bg-brand-orange', 'w-4', 'h-4');
+                    dot.classList.add('bg-brand-orange/40');
+                }
+            });
+        }
+
+        function goToSlide(index) {
+            const slideHeight = container.clientHeight;
+            container.scrollTo({
+                top: index * slideHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // Detectar scroll para actualizar dots
+        container.addEventListener('scroll', updateActiveIndicator);
+        window.addEventListener('resize', updateActiveIndicator);
+
+        // --- CONTROLES DE TECLADO ---
+        window.addEventListener('keydown', (e) => {
+            const slideHeight = container.clientHeight;
+            const currentIndex = Math.round(container.scrollTop / slideHeight);
+
+            if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault();
+                if (currentIndex < sections.length - 1) {
+                    goToSlide(currentIndex + 1);
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (currentIndex > 0) {
+                    goToSlide(currentIndex - 1);
+                }
+            }
+        });
+
+        // --- NAVEGACIÓN CON SOPORTE TÁCTIL (DESLIZAMIENTOS/SWIPE) ---
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        container.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        function handleSwipe() {
+            const slideHeight = container.clientHeight;
+            const currentIndex = Math.round(container.scrollTop / slideHeight);
+            const swipeDistance = touchStartY - touchEndY;
+
+            // Umbral de 50px para evitar falsos deslizamientos
+            if (swipeDistance > 50) {
+                // Swipe arriba -> Siguiente Diapositiva
+                if (currentIndex < sections.length - 1) {
+                    goToSlide(currentIndex + 1);
+                }
+            } else if (swipeDistance < -50) {
+                // Swipe abajo -> Diapositiva anterior
+                if (currentIndex > 0) {
+                    goToSlide(currentIndex - 1);
+                }
+            }
+        }
+
+        // Inicializar indicadores al cargar
+        window.onload = function () {
+            updateActiveIndicator();
+        };
+    </script>
+</body>
+
+</html>
