@@ -112,7 +112,7 @@ const handleSendBid = () => {
     selectedJobId.value = null;
     
     // Alert success
-    alert('¡Tu propuesta técnica ha sido enviada con éxito! Recibirás una notificación de chat si el cliente decide aceptarte en garantía Escrow.');
+    alert('¡Tu propuesta técnica ha sido enviada con éxito! Recibirás una notificación de chat si el cliente te acepta y realiza el pago por OpenPay con retención Escrow.');
   }
 };
 
@@ -133,8 +133,8 @@ const getDistanceText = (job: Job) => {
       <div class="command-copy text-left">
         <h2 class="section-title">Tu oficio convertido en oportunidades cercanas.</h2>
         <p class="body-text">
-          Revisa tareas abiertas por zona aproximada, postúlate con una propuesta clara y espera el fondeo
-          Escrow antes de salir. El panel prioriza trabajos accionables, contratos activos y reputación.
+          Revisa tareas abiertas por zona aproximada, postúlate con una propuesta clara y espera a que el cliente
+          pague por OpenPay y el monto quede retenido con Escrow antes de salir. El panel prioriza trabajos accionables, contratos activos y reputación.
         </p>
       </div>
       <button @click="isProfileModalOpen = true" class="premium-btn">
@@ -192,7 +192,7 @@ const getDistanceText = (job: Job) => {
               <div class="flex justify-between items-center mb-1">
                 <span class="font-semibold text-xs text-dark">{{ contract.clientName }}</span>
                 <span :class="['badge-status', contract.status]">
-                  {{ contract.status === 'pending_deposit' ? 'Depósito Pendiente' : 'Activo (Funded)' }}
+                  {{ contract.status === 'pending_deposit' ? 'Pago pendiente' : 'Pago retenido' }}
                 </span>
               </div>
               <p class="text-xs text-muted line-clamp-1 mb-2">Trato de: ${{ contract.agreementAmount }} MXN</p>
@@ -414,7 +414,7 @@ const getDistanceText = (job: Job) => {
               <span>02</span>
               <div>
                 <h4 class="card-title">Zona aproximada</h4>
-                <p class="body-text text-xs">La dirección exacta se libera solo si el cliente acepta y fondea Escrow.</p>
+                <p class="body-text text-xs">La dirección exacta se libera solo si el cliente acepta y realiza el pago completo por OpenPay.</p>
               </div>
             </div>
 
@@ -428,7 +428,7 @@ const getDistanceText = (job: Job) => {
               </span>
             </div>
             <p class="body-text text-xs italic mt-2 text-muted">
-              La calle y número se revelan en el chat cuando el cliente aprueba tu propuesta y deposita los fondos.
+              La calle y número se revelan en el chat cuando el cliente aprueba tu propuesta y el pago queda retenido con Escrow.
             </p>
           </section>
 
@@ -482,7 +482,7 @@ const getDistanceText = (job: Job) => {
               </div>
 
               <div class="bid-review-footer">
-                <p class="body-text text-xs">Si el cliente acepta, el chat y la ubicación exacta se activarán tras el pago Escrow.</p>
+                <p class="body-text text-xs">Si el cliente acepta, el chat y la ubicación exacta se activarán tras el pago completo por OpenPay con retención Escrow.</p>
                 <button type="submit" class="premium-btn">
                   <span>Enviar propuesta</span>
                   <span class="icon-circle">

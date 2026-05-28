@@ -151,7 +151,7 @@ const selectJob = (id: number) => {
   <div class="dashboard-container">
     <section class="dashboard-command glass-panel mb-4">
       <div class="command-copy text-left">
-        <h2 class="section-title">Contrata con contexto, privacidad y garantía.</h2>
+        <h2 class="section-title">Contrata con contexto, privacidad y pago retenido.</h2>
         <p class="body-text">
           Publica una necesidad para recibir postulaciones o explora perfiles cuando ya sabes qué oficio necesitas.
           Ofiixmantiene la zona aproximada visible y reserva la dirección exacta para el trato aceptado.
@@ -626,7 +626,7 @@ const selectJob = (id: number) => {
             </h3>
             <p class="body-text">
               Profesional local disponible para solicitudes directas y tareas publicadas. Revisa su experiencia,
-              trabajos anteriores y reseñas antes de iniciar un trato protegido.
+              trabajos anteriores y reseñas antes de iniciar un trato con pago retenido.
             </p>
             <div class="provider-profile-stats">
               <span><Star :size="13" class="icon-star" /> {{ selectedProvider.rating }} de calificación</span>
@@ -778,7 +778,7 @@ const selectJob = (id: number) => {
           </div>
 
           <button type="submit" class="premium-btn w-full">
-            <span>Iniciar Contrato y realizar Garantía</span>
+            <span>Iniciar contrato y pagar por OpenPay</span>
             <span class="icon-circle">
               <ArrowRight :size="18" />
             </span>

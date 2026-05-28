@@ -4,6 +4,8 @@ import WelcomeView from './views/WelcomeView.vue';
 import DemandDashboard from './views/DemandDashboard.vue';
 import OfferDashboard from './views/OfferDashboard.vue';
 import ChatEscrowView from './views/ChatEscrowView.vue';
+import MvpPrototypeView from './views/MvpPrototypeView.vue';
+import PresentationView from './views/PresentationView.vue';
 import { LogOut } from 'lucide-vue-next';
 
 const { state, toggleMode, logout, navigateTo } = useStore();
@@ -12,7 +14,7 @@ const { state, toggleMode, logout, navigateTo } = useStore();
 <template>
   <div
     id="main-app"
-    :class="{ 'is-landing-view': state.currentView === 'welcome', 'is-function-view': state.currentView !== 'welcome' }"
+    :class="{ 'is-landing-view': state.currentView === 'welcome' || state.currentView === 'presentation', 'is-function-view': state.currentView !== 'welcome' && state.currentView !== 'presentation' }"
   >
     <!-- Persistent mode light: full backdrop on landing, navbar halo in function views -->
     <div :class="['ambient-orbs', state.currentView === 'welcome' ? 'landing-light' : 'function-light']">
@@ -21,7 +23,7 @@ const { state, toggleMode, logout, navigateTo } = useStore();
     </div>
 
     <!-- Master Header -->
-    <header v-if="state.currentView !== 'welcome'" class="app-navbar glass-panel">
+    <header v-if="state.currentView !== 'welcome' && state.currentView !== 'presentation'" class="app-navbar glass-panel">
       <div class="navbar-mode-light" aria-hidden="true"></div>
       <!-- Left side: Brand -->
       <div class="brand-logo" @click="navigateTo('welcome')">
@@ -43,6 +45,9 @@ const { state, toggleMode, logout, navigateTo } = useStore();
 
       <!-- Right side: Session details -->
       <div class="user-session-section">
+        <button @click="navigateTo('mvp-prototype')" class="secondary-btn prototype-nav-btn">
+          MVP
+        </button>
         <template v-if="state.user">
           <div class="flex items-center gap-2 mr-4 text-xs font-semibold text-dark">
             <span class="avatar-letter-circle">
@@ -69,6 +74,8 @@ const { state, toggleMode, logout, navigateTo } = useStore();
         <DemandDashboard v-else-if="state.currentView === 'demand-dashboard'" />
         <OfferDashboard v-else-if="state.currentView === 'offer-dashboard'" />
         <ChatEscrowView v-else-if="state.currentView === 'chat-escrow'" />
+        <MvpPrototypeView v-else-if="state.currentView === 'mvp-prototype'" />
+        <PresentationView v-else-if="state.currentView === 'presentation'" />
       </Transition>
     </main>
 
@@ -79,7 +86,7 @@ const { state, toggleMode, logout, navigateTo } = useStore();
         <div class="flex gap-4">
           <a href="#CHECKLIST.md" class="text-xs text-muted hover-accent">CHECKLIST.md</a>
           <span class="text-xs text-muted">|</span>
-          <span class="text-xs text-muted">Stripe Mock Activado 🔒</span>
+          <span class="text-xs text-muted">OpenPay Mock Activado 🔒</span>
         </div>
       </div>
     </footer> -->
@@ -229,6 +236,12 @@ const { state, toggleMode, logout, navigateTo } = useStore();
 .user-session-section {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.prototype-nav-btn {
+  padding: 9px 14px;
+  font-size: 12px;
 }
 
 .avatar-letter-circle {

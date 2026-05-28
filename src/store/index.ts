@@ -185,7 +185,7 @@ const initialJobs: Job[] = [
 // Global State Store
 const state = reactive({
   // Auth & Nav
-  currentView: 'welcome' as 'welcome' | 'auth' | 'demand-dashboard' | 'offer-dashboard' | 'chat-escrow',
+  currentView: 'welcome' as 'welcome' | 'auth' | 'demand-dashboard' | 'offer-dashboard' | 'chat-escrow' | 'mvp-prototype' | 'presentation',
   activeMode: 'OFERTA' as 'DEMANDA' | 'OFERTA',
   user: null as User | null,
   
@@ -233,7 +233,7 @@ export const useStore = () => {
   };
 
   // Navigations
-  const navigateTo = (view: 'welcome' | 'auth' | 'demand-dashboard' | 'offer-dashboard' | 'chat-escrow') => {
+  const navigateTo = (view: 'welcome' | 'auth' | 'demand-dashboard' | 'offer-dashboard' | 'chat-escrow' | 'mvp-prototype' | 'presentation') => {
     state.currentView = view;
   };
 
@@ -306,7 +306,7 @@ export const useStore = () => {
     job.status = 'bidded';
   };
 
-  // Clients accepting a bid (2.4) -> Initiates Escrow pending
+  // Clients accepting a bid (2.4) -> Initiates pending full payment with Escrow
   const acceptBid = (jobId: number, bid: Bid) => {
     const job = state.jobs.find(j => j.id === jobId);
     if (!job) return;
@@ -326,7 +326,7 @@ export const useStore = () => {
       messages: [
         {
           sender: 'provider',
-          content: `¡Hola ${job.clientName}! Acepté tu propuesta de resolver "${job.title}". El costo acordado es de $${bid.bidAmount}. Estoy listo para asistir. Por favor realiza el depósito de garantía en Escrow para poder ver la ubicación exacta y comenzar mi viaje.`,
+          content: `¡Hola ${job.clientName}! Acepté tu propuesta para resolver "${job.title}". El costo acordado es de $${bid.bidAmount}. Realiza el pago completo por OpenPay para que el sistema me libere la información de tu domicilio y enseguida estaré ahí. Tu pago es seguro: Ofiix implementa Escrow, así que el dinero queda retenido y no se libera hasta que se completa el trabajo.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ],
@@ -380,7 +380,7 @@ export const useStore = () => {
         },
         {
           sender: 'provider',
-          content: `¡Muchísimas gracias por confiar en mí! Acepto de inmediato. Realiza el depósito de garantía en Escrow y el sistema me liberará los detalles de tu dirección para salir en camino.`,
+          content: `¡Muchísimas gracias por confiar en mí! Acepto de inmediato. Realiza el pago completo por OpenPay para que el sistema me libere los detalles de tu dirección y pueda salir en camino. No te preocupes: Ofiix implementa Escrow, por lo que tu dinero queda retenido y solo se libera cuando el trabajo se completa.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ],
@@ -392,7 +392,7 @@ export const useStore = () => {
     state.currentView = 'chat-escrow';
   };
 
-  // Payment Processing (4.2) -> Funds contract
+  // Payment Processing (4.2) -> Retains full payment in Escrow
   const fundContract = (contractId: number) => {
     const contract = state.contracts.find(c => c.id === contractId);
     if (!contract) return;
@@ -402,13 +402,13 @@ export const useStore = () => {
     // Add automated messages
     contract.messages.push({
       sender: 'client',
-      content: `🔒 [Fondo Seguro Realizado] Se han depositado $${contract.agreementAmount} MXN en la garantía Escrow de Terra. El pago está resguardado y listo para ser liberado al completar el trabajo.`,
+      content: `🔒 [Pago seguro realizado] Se pagaron $${contract.agreementAmount} MXN por OpenPay. Ofiix mantiene el dinero retenido con Escrow y solo lo liberará al profesional cuando confirmes que el trabajo fue completado.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
 
     contract.messages.push({
       sender: 'provider',
-      content: `¡Perfecto! Veo que los fondos ya están en garantía Escrow. El sistema me ha liberado la calle, número y mapa de tu ubicación exacta. ¡Voy en camino de inmediato! Tiempo estimado de llegada: 25 minutos.`,
+      content: `¡Perfecto! Veo que el pago completo ya quedó retenido de forma segura con Escrow. El sistema me liberó la calle, número y mapa de tu ubicación exacta. ¡Voy en camino de inmediato! Tiempo estimado de llegada: 25 minutos.`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
   };
@@ -445,7 +445,7 @@ export const useStore = () => {
     }
   };
 
-  // Release Escrow & Complete Job (4.3)
+  // Release retained payment & complete job (4.3)
   const completeContract = (contractId: number) => {
     const contract = state.contracts.find(c => c.id === contractId);
     if (!contract) return;
@@ -460,7 +460,7 @@ export const useStore = () => {
 
     contract.messages.push({
       sender: 'client',
-      content: `🎉 [Fondos Liberados] Se ha liberado la garantía de $${contract.agreementAmount} MXN al proveedor exitosamente. ¡Trabajo terminado!`,
+      content: `🎉 [Pago liberado] Se liberó el pago retenido de $${contract.agreementAmount} MXN al proveedor. ¡Trabajo terminado!`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     });
   };

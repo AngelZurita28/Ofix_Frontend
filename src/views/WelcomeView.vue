@@ -27,7 +27,7 @@ import {
 
 type LandingMode = 'DEMANDA' | 'OFERTA';
 
-const { state, setMode, login, register } = useStore();
+const { state, setMode, login, register, navigateTo } = useStore();
 
 const isAuthModalOpen = ref(false);
 const isRegister = ref(false);
@@ -112,13 +112,13 @@ const modeCopy = {
       {
         icon: HeartHandshake,
         title: 'Acepta una propuesta',
-        text: 'Compara perfil, explicación técnica y precio antes de concretar el trato protegido.'
+        text: 'Compara perfil, explicación técnica y precio antes de concretar el trato con pago retenido.'
       }
     ],
     rail: [
       'Buscar perfiles o solicitar tarea',
       'Profesionales postulan con propuesta y precio',
-      'Solicitante elige y paga por Escrow',
+      'Solicitante paga por OpenPay y Ofiix retiene el dinero con Escrow',
       'Chat y ubicación exacta se liberan tras acuerdo'
     ]
   },
@@ -153,7 +153,7 @@ const modeCopy = {
       }
     ],
     description:
-      'Como profesional ves tareas activas, filtras por categoría, presupuesto y distancia, y te postulas con una propuesta concreta. La ubicación exacta y el chat se liberan cuando el usuario acepta y paga por Escrow.',
+      'Como profesional ves tareas activas, filtras por categoría, presupuesto y distancia, y te postulas con una propuesta concreta. La ubicación exacta y el chat se liberan cuando el usuario acepta y realiza el pago completo por OpenPay; Ofiix retiene el dinero con Escrow hasta completar el trabajo.',
     cta: 'Ofrecer mi servicio',
     secondary: 'Ver tareas cercanas',
     previewTitle: 'Tarea: reparación de tuberías',
@@ -167,12 +167,12 @@ const modeCopy = {
     boardItems: [
       'Explicas experiencia en tuberías del hogar',
       'Propones $600/hr por herramientas y traslado',
-      'Esperas aceptación y depósito Escrow'
+      'Esperas aceptación y pago retenido con Escrow'
     ],
     metrics: [
       { value: 'Perfil', label: 'profesional visible' },
       { value: 'Mapa', label: 'tareas cercanas' },
-      { value: 'Escrow', label: 'cobro protegido' }
+      { value: 'Escrow', label: 'pago retenido' }
     ],
     flow: [
       {
@@ -306,6 +306,7 @@ const selectRole = (role: LandingMode) => {
         </div>
         <a href="#flujo">Flujo</a>
         <a href="#confianza">Confianza</a>
+        <a href="#" @click.prevent="navigateTo('presentation')" class="presentation-link">Presentación</a>
       </nav>
       <button @click="openAuthModal(false)" class="secondary-btn login-btn">
         Iniciar sesion
@@ -316,7 +317,7 @@ const selectRole = (role: LandingMode) => {
       <div class="hero-copy">
         <div class="intro-badge">
           <Sparkles :size="14" />
-          <span>Conexión local mexicana con garantía Escrow</span>
+          <span>Conexión local mexicana con pago retenido por Escrow</span>
         </div>
 
         <h1 class="hero-title">
@@ -326,7 +327,7 @@ const selectRole = (role: LandingMode) => {
         <p class="hero-lede">
           Ofiixconecta a quien necesita resolver una tarea con profesionales locales. El solicitante puede
           buscar perfiles o publicar una tarea; el profesional puede encontrar trabajos, postularse y cobrar
-          con una garantía Escrow.
+          con pago retenido por Escrow.
         </p>
 
         <div class="hero-actions">
@@ -551,7 +552,7 @@ const selectRole = (role: LandingMode) => {
           <span class="mode-eyebrow">Lo que ve el usuario</span>
           <h3>{{ isDemandMode ? 'Profesionales y solicitudes de tarea' : 'Tareas cercanas para postularse' }}</h3>
           <p class="body-text">
-            El solicitante paga por Escrow, el dinero queda retenido, se liberan chat y ubicación cuando hay acuerdo,
+            El solicitante paga el monto completo por OpenPay, el dinero queda retenido con Escrow, se liberan chat y ubicación cuando hay acuerdo,
             y el profesional cobra cuando el trabajo se confirma como realizado.
           </p>
         </div>
@@ -570,7 +571,7 @@ const selectRole = (role: LandingMode) => {
           <ShieldCheck :size="34" />
         </div>
         <div>
-          <span class="badge badge-warning">Garantia fiduciaria</span>
+          <span class="badge badge-warning">Pago retenido</span>
           <h2 class="section-title">Escrow crea confianza antes de que alguien toque la puerta.</h2>
           <p class="body-text">
             El pago se resguarda, la ubicacion exacta se protege por fases y la conversacion queda conectada
@@ -587,8 +588,8 @@ const selectRole = (role: LandingMode) => {
         </div>
         <div class="trust-mini">
           <CircleDollarSign :size="20" />
-          <strong>Pago protegido</strong>
-          <span>Los fondos se liberan al cerrar el trabajo.</span>
+          <strong>Pago retenido</strong>
+          <span>El pago completo se libera al cerrar el trabajo.</span>
         </div>
         <div class="trust-mini">
           <MessageCircle :size="20" />

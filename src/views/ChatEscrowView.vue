@@ -35,25 +35,25 @@ const statusMeta = computed(() => {
 
   if (activeContract.value.status === 'pending_deposit') {
     return {
-      label: 'Pendiente de garantía',
-      title: 'El trato espera el depósito Escrow',
+      label: 'Pago pendiente',
+      title: 'El trato espera el pago completo por OpenPay',
       detail: state.activeMode === 'DEMANDA'
-        ? 'Fondea la garantía para activar la visita y liberar los datos finales.'
-        : 'Espera el fondeo antes de salir. La dirección exacta sigue protegida.'
+        ? 'Realiza el pago completo para activar la visita. Ofiix retiene el dinero con Escrow hasta que el trabajo se complete.'
+        : 'Espera a que el pago quede retenido con Escrow antes de salir. La dirección exacta sigue protegida.'
     };
   }
 
   if (activeContract.value.status === 'funded') {
     return {
-      label: 'Garantía fondeada',
+      label: 'Pago retenido',
       title: 'El trabajo ya puede ejecutarse',
-      detail: 'Los fondos están resguardados y la información operativa se desbloqueó.'
+      detail: 'El pago completo está retenido con Escrow y la información operativa se desbloqueó.'
     };
   }
 
   return {
     label: 'Trato completado',
-    title: 'La garantía fue liberada',
+    title: 'El pago retenido fue liberado',
     detail: 'El trabajo cerró y la reputación puede alimentar futuros tratos.'
   };
 });
@@ -115,7 +115,7 @@ const handleSendPhotoEvidence = () => {
   sendMessage(
     activeContract.value.id, 
     sender, 
-    '📸 He adjuntado una fotografía del estado del avance de la tarea para la garantía visual.', 
+    '📸 He adjuntado una fotografía del estado del avance de la tarea como evidencia visual.', 
     randomImage
   );
 };
@@ -166,7 +166,7 @@ const goBackToDashboard = () => {
       </div>
 
       <div v-if="activeContract" class="deal-amount-card">
-        <span>Monto protegido</span>
+        <span>Pago retenido</span>
         <strong>${{ activeContract.agreementAmount }} MXN</strong>
         <small>{{ activeContract.providerName }} & {{ activeContract.clientName }}</small>
       </div>
@@ -249,7 +249,7 @@ const goBackToDashboard = () => {
           <div class="escrow-widget-head">
             <ShieldCheck :size="20" class="text-orange" />
             <div>
-              <span class="deal-kicker">Garantía Ofix</span>
+              <span class="deal-kicker">Pago seguro Ofiix</span>
               <h3 class="card-title">Escrow y privacidad</h3>
             </div>
           </div>
@@ -258,11 +258,11 @@ const goBackToDashboard = () => {
           <div v-if="activeContract.status === 'pending_deposit'">
             <!-- Client view of pending payment -->
             <div v-if="state.activeMode === 'DEMANDA'" class="client-payment-flow">
-              <p class="body-text text-sm mb-4">Deposita de manera ultra-segura el fondo acordado. Ofiixresguardará el dinero y solo lo entregará al técnico una vez que confirmes que el servicio fue entregado.</p>
+              <p class="body-text text-sm mb-4">Realiza el pago completo de manera segura por OpenPay. Ofiix mantiene el dinero retenido con Escrow y solo lo libera al técnico cuando confirmes que el servicio fue completado.</p>
               
               <div class="glass-panel-sm payment-card-mock mb-4">
                 <div class="flex justify-between items-center mb-3">
-                  <span class="font-bold text-sm">Pago Simulado (Stripe)</span>
+                  <span class="font-bold text-sm">Pago Simulado (OpenPay)</span>
                   <CreditCard :size="16" class="text-muted" />
                 </div>
                 
@@ -299,7 +299,7 @@ const goBackToDashboard = () => {
                   <span>Procesando pago seguro...</span>
                 </template>
                 <template v-else>
-                  <span>Fondear Garantía (${{ activeContract.agreementAmount }} MXN)</span>
+                  <span>Pagar completo (${{ activeContract.agreementAmount }} MXN)</span>
                   <span class="icon-circle">
                     <Lock :size="14" />
                   </span>
@@ -311,8 +311,8 @@ const goBackToDashboard = () => {
             <div v-else class="provider-payment-flow">
               <div class="alert-box-warning mb-4 glass-panel-sm">
                 <Clock :size="24" class="text-orange mb-2 block mx-auto animate-spin" />
-                <p class="body-text text-sm font-semibold text-center mb-1">Esperando Depósito en Garantía</p>
-                <p class="body-text text-xs text-center opacity-75">No asistas al lugar hasta que el cliente realice el fondeo. Te notificaremos de inmediato.</p>
+                <p class="body-text text-sm font-semibold text-center mb-1">Esperando pago seguro</p>
+                <p class="body-text text-xs text-center opacity-75">No asistas al lugar hasta que el cliente pague por OpenPay y el monto quede retenido con Escrow. Te notificaremos de inmediato.</p>
               </div>
             </div>
           </div>
@@ -321,8 +321,8 @@ const goBackToDashboard = () => {
           <div v-else-if="activeContract.status === 'funded'">
             <div class="alert-box-success mb-6 glass-panel-sm text-center">
               <CheckCircle2 :size="24" class="text-green mb-1 block mx-auto" />
-              <p class="body-text text-sm font-semibold text-green">✓ Garantía Escrow Fondeada</p>
-              <p class="body-text text-xs opacity-75">Los fondos de ${{ activeContract.agreementAmount }} MXN se encuentran seguros.</p>
+              <p class="body-text text-sm font-semibold text-green">✓ Pago completo retenido con Escrow</p>
+              <p class="body-text text-xs opacity-75">Los ${{ activeContract.agreementAmount }} MXN se pagaron por OpenPay y permanecen retenidos hasta completar el trabajo.</p>
             </div>
 
             <!-- UNLOCKED GEO INFO -->
@@ -357,14 +357,14 @@ const goBackToDashboard = () => {
             <!-- Actions buttons depending on role -->
             <div v-if="state.activeMode === 'DEMANDA'" class="client-actions-funded">
               <button @click="handleCompleteContract" class="premium-btn w-full">
-                <span>Liberar Garantía al Proveedor</span>
+                <span>Liberar pago al proveedor</span>
                 <span class="icon-circle">
                   <ShieldCheck :size="18" />
                 </span>
               </button>
             </div>
             <div v-else class="provider-actions-funded">
-              <button @click="sendMessage(activeContract.id, 'provider', '🛠️ He terminado el trabajo de reparación. Por favor revisa el resultado y libera los fondos en garantía Escrow.')" class="premium-btn w-full">
+              <button @click="sendMessage(activeContract.id, 'provider', '🛠️ He terminado el trabajo de reparación. Por favor revisa el resultado y libera el pago retenido con Escrow.')" class="premium-btn w-full">
                 <span>Marcar como Terminado</span>
                 <span class="icon-circle">
                   <CheckCircle2 :size="18" />
@@ -378,7 +378,7 @@ const goBackToDashboard = () => {
             <div class="alert-box-success mb-6 glass-panel-sm text-center">
               <CheckCircle2 :size="32" class="text-green mb-2 block mx-auto" />
               <h4 class="card-title text-lg text-green mb-1">Trato Completado</h4>
-              <p class="body-text text-sm opacity-75">La garantía de ${{ activeContract.agreementAmount }} MXN se ha transferido al proveedor.</p>
+              <p class="body-text text-sm opacity-75">El pago retenido de ${{ activeContract.agreementAmount }} MXN se ha transferido al proveedor.</p>
             </div>
 
             <!-- Rating prompt trigger if not submitted -->
